@@ -38,12 +38,12 @@ background:
 
 comments:
   giscus:
-    enabled: false
+    enabled: true
     repo: R1C3SH0W3R/r1c3sh0w3r.github.io
-    repo_id: ""
+    repo_id: R_kgDOToLU1A
     category: 留言
-    category_id: ""
+    category_id: DIC_kwDOToLU1M4DCT3K
     mapping: pathname
-    theme: light
+    theme: preferred_color_scheme
 
 footer_text: 绯野的博客
