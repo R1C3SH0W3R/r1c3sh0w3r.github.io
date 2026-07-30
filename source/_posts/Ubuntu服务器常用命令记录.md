@@ -2,8 +2,7 @@
 title: Ubuntu 服务器常用命令记录
 date: 2026-07-30 10:30:00
 description: 整理一些曾经维护 Ubuntu 与 Nginx 时用到的常见检查命令，留作日后查阅。
-categories:
-  - Linux
+categories: 技术
 tags:
   - Ubuntu
   - Nginx

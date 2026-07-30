@@ -2,6 +2,31 @@
 
 这是从原 Nginx 单页博客迁移而来的 Hexo 项目，保留了动态背景、蕾姆 Live2D、鼠标拖尾和点击特效。
 
+## 在网页后台发文章
+
+项目根目录的 `.pages.yml` 已配置 Pages CMS。完成首次授权后，以后不需要打开服务器或手写 Git 命令：
+
+1. 打开 `https://app.pagescms.org/`，使用 GitHub 登录。
+2. 安装 Pages CMS GitHub App，并只授权 `r1c3sh0w3r.github.io` 仓库。
+3. 进入 `博客文章`，点击新建。
+4. 填写标题、时间和摘要，并在分类栏中选择 `技术`、`生活` 或 `自创文`。
+5. 正文编辑器可以直接上传图片；封面图、视频和视频封面也有独立上传栏。
+6. 保存后 Pages CMS 会提交到 `main` 分支，GitHub Actions 随即自动发布。
+
+图片会保存到 `source/uploads/images/`，视频会保存到 `source/uploads/videos/`。
+
+## 留言系统
+
+文章模板已经接入 giscus，但需要先在 GitHub 完成一次配置：
+
+1. 在仓库 `Settings > General > Features` 中启用 `Discussions`。
+2. 在 Discussions 中创建名为 `留言` 的分类。
+3. 安装 giscus GitHub App，并授权当前仓库。
+4. 在 `https://giscus.app/zh-CN` 生成配置，取得 `repo-id` 和 `category-id`。
+5. 把两个编号填入 `themes/rem-dream/_config.yml`，再把 `enabled` 改为 `true`。
+
+访客需要使用 GitHub 账号登录后留言；留言内容由 GitHub Discussions 保存和管理。
+
 ## 本机预览
 
 在 PowerShell 中进入项目目录：
@@ -28,8 +53,7 @@ npm run new -- "文章标题"
 title: 文章标题
 date: 2026-07-30 18:00:00
 description: 这是一段首页摘要。
-categories:
-  - 学习记录
+categories: 技术
 tags:
   - Linux
 ---
@@ -52,11 +76,11 @@ source/_posts/我的文章/example.jpg
 
 ## 文章中加入视频
 
-把体积较小的 MP4 放到 `source/media/`，然后在文章里写：
+在 Pages CMS 的“文章视频”栏上传较短的 MP4 或 WebM；手动维护时也可以把文件放到 `source/uploads/videos/`，然后在文章里写：
 
 ```html
-<video controls preload="metadata" poster="/media/video-cover.jpg">
-  <source src="/media/example.mp4" type="video/mp4">
+<video controls preload="metadata" poster="/uploads/images/video-cover.jpg">
+  <source src="/uploads/videos/example.mp4" type="video/mp4">
 </video>
 ```
 

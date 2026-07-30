@@ -189,7 +189,8 @@ body > header {
 .side-box,
 .project,
 .article-card,
-.article-navigation {
+.article-navigation,
+.comments-card {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--paper);
@@ -293,11 +294,39 @@ section {
   border-bottom: 0;
 }
 
-.post time {
-  display: block;
+.post-meta {
+  min-height: 25px;
   margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.post time {
   color: var(--muted);
   font-size: 14px;
+}
+
+.post-category,
+.article-category {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: 2px 9px;
+  border: 1px solid rgba(232, 111, 156, .24);
+  border-radius: 999px;
+  color: #a6426c;
+  background: rgba(255, 225, 237, .88);
+  font-size: 13px;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+.post-category:hover,
+.article-category:hover {
+  color: #7f2f51;
+  background: #ffd5e6;
 }
 
 .post h3 {
@@ -439,6 +468,28 @@ section {
   padding: 32px;
 }
 
+.article-cover {
+  margin: -32px -32px 30px;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+}
+
+.article-cover img {
+  display: block;
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+}
+
+.article-featured-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 30px;
+  border-radius: 8px;
+  background: #1f1b20;
+}
+
 .article-content {
   overflow-wrap: anywhere;
   color: var(--text);
@@ -563,6 +614,35 @@ section {
 
 .article-navigation a {
   color: #b64f79;
+}
+
+.comments-card {
+  max-width: 860px;
+  margin: 20px auto 0;
+  padding: 28px 32px;
+}
+
+.comments-heading {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.comments-heading h2 {
+  margin: 0 0 4px;
+  font-size: 23px;
+  letter-spacing: 0;
+}
+
+.comments-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.giscus,
+.giscus-frame {
+  width: 100%;
 }
 
 .listing-page {
@@ -695,9 +775,14 @@ body > footer {
     font-size: 44px;
   }
 
-  .article-card {
+  .article-card,
+  .comments-card {
     padding: 24px;
   }
+  .article-cover {
+    margin: -24px -24px 24px;
+  }
+
 
   .article-navigation {
     flex-direction: column;
@@ -715,9 +800,14 @@ body > footer {
     font-size: 36px;
   }
 
-  .article-card {
+  .article-card,
+  .comments-card {
     padding: 20px;
   }
+  .article-cover {
+    margin: -20px -20px 20px;
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {

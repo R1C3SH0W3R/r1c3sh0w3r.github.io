@@ -36,4 +36,14 @@ background:
   video: /assets/video/yukino-bg.mp4
   poster: /assets/video/yukino-bg-preview.jpg
 
+comments:
+  giscus:
+    enabled: false
+    repo: R1C3SH0W3R/r1c3sh0w3r.github.io
+    repo_id: ""
+    category: 留言
+    category_id: ""
+    mapping: pathname
+    theme: light
+
 footer_text: 绯野的博客

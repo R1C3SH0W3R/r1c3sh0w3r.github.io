@@ -1,0 +1,108 @@
+media:
+  - name: post_images
+    label: 文章图片
+    input: source/uploads/images
+    output: /uploads/images
+    extensions: [jpg, jpeg, png, webp, gif]
+    categories: [image]
+    rename: safe
+  - name: post_videos
+    label: 文章视频
+    input: source/uploads/videos
+    output: /uploads/videos
+    extensions: [mp4, webm]
+    categories: [video]
+    rename: safe
+
+content:
+  - name: posts
+    label: 博客文章
+    type: collection
+    path: source/_posts
+    format: yaml-frontmatter
+    filename:
+      template: "{year}-{month}-{day}-{title}.md"
+      field: create
+    view:
+      fields: [title, categories, date]
+      primary: title
+      sort: [date, title, categories]
+      search: [title, description, categories, tags]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: 文章标题
+        type: string
+        required: true
+      - name: date
+        label: 发布时间
+        type: date
+        required: true
+        options:
+          time: true
+          format: yyyy-MM-dd HH:mm:ss
+      - name: description
+        label: 文章摘要
+        type: text
+        description: 显示在首页文章列表中，建议填写一到两句话。
+      - name: categories
+        label: 文章分类
+        type: select
+        required: true
+        options:
+          placeholder: 请选择一个分类
+          values:
+            - 技术
+            - 生活
+            - 自创文
+      - name: tags
+        label: 文章标签
+        type: string
+        list: true
+        description: 可按需要添加多个标签，例如 Hexo、随笔、小说。
+      - name: cover
+        label: 文章封面图
+        type: image
+        options:
+          media: post_images
+          extensions: [jpg, jpeg, png, webp, gif]
+          rename: safe
+      - name: video
+        label: 文章视频
+        type: file
+        description: 建议只上传较短的视频；较大的视频请使用哔哩哔哩等平台的嵌入代码。
+        options:
+          media: post_videos
+          extensions: [mp4, webm]
+          categories: [video]
+          rename: safe
+      - name: video_poster
+        label: 视频封面图
+        type: image
+        options:
+          media: post_images
+          extensions: [jpg, jpeg, png, webp]
+          rename: safe
+      - name: body
+        label: 文章正文
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          media: post_images
+          extensions: [jpg, jpeg, png, webp, gif]
+          rename: safe
+          switcher: true
+
+settings:
+  content:
+    merge: true
+  commit:
+    identity: user
+    templates:
+      create: "发布文章：{filename}"
+      update: "更新文章：{filename}"
+      delete: "删除文章：{filename}"
+      rename: "重命名文章：{oldFilename} -> {newFilename}"

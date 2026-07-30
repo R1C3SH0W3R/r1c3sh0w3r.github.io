@@ -2,8 +2,7 @@
 title: 博客迁移到 GitHub Pages
 date: 2026-07-30 10:00:00
 description: 为了减少服务器维护与公网流量费用，我决定把博客迁移到 GitHub Pages。
-categories:
-  - 建站记录
+categories: 技术
 tags:
   - GitHub
   - Hexo

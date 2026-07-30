@@ -27,8 +27,14 @@
       <% if (page.posts.length) { %>
         <% page.posts.each(function(post) { %>
           <% const summary = post.description || strip_html(post.excerpt || post.content).replace(/\s+/g, ' ').trim().slice(0, 130); %>
+          <% const categories = post.categories ? post.categories.map(function(category) { return category; }) : []; %>
           <article class="post">
-            <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY 年 M 月 D 日') %></time>
+            <div class="post-meta">
+              <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY 年 M 月 D 日') %></time>
+              <% if (categories.length) { %>
+                <a class="post-category" href="<%- url_for(categories[0].path) %>"><%= categories[0].name %></a>
+              <% } %>
+            </div>
             <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
             <p><%= summary %><%= summary.length >= 130 ? '…' : '' %></p>
             <a class="read-more" href="<%- url_for(post.path) %>">阅读文章</a>

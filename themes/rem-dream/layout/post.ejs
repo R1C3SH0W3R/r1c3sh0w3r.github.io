@@ -5,12 +5,27 @@
     <div class="article-meta">
       <time datetime="<%= date_xml(page.date) %>"><%= date(page.date, 'YYYY 年 M 月 D 日') %></time>
       <% if (page.categories && page.categories.length) { %>
-        <span><%= page.categories.map(function(category) { return category.name; }).join(' · ') %></span>
+        <% page.categories.each(function(category) { %>
+          <a class="article-category" href="<%- url_for(category.path) %>"><%= category.name %></a>
+        <% }); %>
       <% } %>
     </div>
   </header>
 
   <div class="article-card">
+    <% if (page.cover) { %>
+      <figure class="article-cover">
+        <img src="<%- url_for(page.cover) %>" alt="<%= page.title %>的封面图">
+      </figure>
+    <% } %>
+
+    <% if (page.video) { %>
+      <video class="article-featured-video" controls preload="metadata"<% if (page.video_poster) { %> poster="<%- url_for(page.video_poster) %>"<% } %>>
+        <source src="<%- url_for(page.video) %>">
+        您的浏览器暂不支持播放此视频。
+      </video>
+    <% } %>
+
     <div class="article-content"><%- page.content %></div>
 
     <% if (page.tags && page.tags.length) { %>
@@ -27,5 +42,32 @@
       <% if (page.prev) { %><a href="<%- url_for(page.prev.path) %>">上一篇：<%= page.prev.title %></a><% } %>
       <% if (page.next) { %><a href="<%- url_for(page.next.path) %>">下一篇：<%= page.next.title %></a><% } %>
     </nav>
+  <% } %>
+
+  <% const giscus = theme.comments && theme.comments.giscus; %>
+  <% if (page.comments !== false && giscus && giscus.enabled && giscus.repo_id && giscus.category_id) { %>
+    <section class="comments-card" aria-labelledby="comments-title">
+      <div class="comments-heading">
+        <h2 id="comments-title">留言</h2>
+        <p>欢迎留下想法。留言将由 GitHub Discussions 保存。</p>
+      </div>
+      <div class="giscus"></div>
+      <script src="https://giscus.app/client.js"
+              data-repo="<%= giscus.repo %>"
+              data-repo-id="<%= giscus.repo_id %>"
+              data-category="<%= giscus.category %>"
+              data-category-id="<%= giscus.category_id %>"
+              data-mapping="<%= giscus.mapping || 'pathname' %>"
+              data-strict="1"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="top"
+              data-theme="<%= giscus.theme || 'light' %>"
+              data-lang="zh-CN"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
   <% } %>
 </article>
