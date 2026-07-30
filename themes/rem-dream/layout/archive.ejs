@@ -1,0 +1,14 @@
+<section class="listing-page">
+  <div class="section-heading">
+    <h1 class="section-title"><%= page.title || '文章归档' %></h1>
+  </div>
+  <div class="post-list">
+    <% page.posts.each(function(post) { %>
+      <article class="post">
+        <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY 年 M 月 D 日') %></time>
+        <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
+        <a class="read-more" href="<%- url_for(post.path) %>">阅读文章</a>
+      </article>
+    <% }); %>
+  </div>
+</section>

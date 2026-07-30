@@ -1,0 +1,39 @@
+brand: 绯野のblog
+hero_title: 神の領域
+hero_eyebrow: 欢迎来到——
+hero_text: 这里就是独属于绯野酱的小小空间了喵~ 之后绯野酱也会在这里分享一些学到的……emm 小小皮毛吧，也会分享吃喝但是不分享拉撒 desu~
+
+profile:
+  avatar_text: 昴
+  title: 欢迎来到神的领域
+  description: 大家多多灌注喵~
+  tags:
+    - 二进制逆向
+    - 编译原理
+    - src
+    - 原神
+
+posts_title: 小野酱の内容喵
+about_text: 一个专门给绯野发挥的小站，或许对你们有用。
+
+links:
+  - name: Ubuntu
+    url: https://ubuntu.com/
+  - name: Nginx
+    url: https://nginx.org/
+  - name: GitHub
+    url: https://github.com/
+
+projects:
+  - title: 个人博客
+    description: 搭建一个属于自己的内容空间，记录技术和日常思考。
+  - title: 安全学习
+    description: 整理二进制逆向、编译原理和日常练习中的心得。
+  - title: 作品归档
+    description: 把自己的项目、笔记、工具和文章安静地保存在这里。
+
+background:
+  video: /assets/video/yukino-bg.mp4
+  poster: /assets/video/yukino-bg-preview.jpg
+
+footer_text: 绯野的博客

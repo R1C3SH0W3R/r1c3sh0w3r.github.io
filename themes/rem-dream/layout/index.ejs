@@ -1,0 +1,83 @@
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="eyebrow-dot"></span><%= theme.hero_eyebrow %></div>
+    <h1><%= theme.hero_title %></h1>
+    <p><%= theme.hero_text %></p>
+  </div>
+
+  <aside class="profile" id="about">
+    <div class="avatar"><%= theme.profile.avatar_text %></div>
+    <h2><%= theme.profile.title %></h2>
+    <p><%= theme.profile.description %></p>
+    <div class="tags">
+      <% theme.profile.tags.forEach(function(tag) { %>
+        <span class="tag"><%= tag %></span>
+      <% }); %>
+    </div>
+  </aside>
+</section>
+
+<section id="posts">
+  <div class="section-heading">
+    <h2 class="section-title"><%= theme.posts_title %></h2>
+  </div>
+
+  <div class="grid">
+    <div class="post-list">
+      <% if (page.posts.length) { %>
+        <% page.posts.each(function(post) { %>
+          <% const summary = post.description || strip_html(post.excerpt || post.content).replace(/\s+/g, ' ').trim().slice(0, 130); %>
+          <article class="post">
+            <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY 年 M 月 D 日') %></time>
+            <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
+            <p><%= summary %><%= summary.length >= 130 ? '…' : '' %></p>
+            <a class="read-more" href="<%- url_for(post.path) %>">阅读文章</a>
+          </article>
+        <% }); %>
+      <% } else { %>
+        <article class="post empty-state">
+          <h3>文章正在准备中</h3>
+          <p>第一篇记录很快就会出现在这里。</p>
+        </article>
+      <% } %>
+
+      <% if (page.prev_link || page.next_link) { %>
+        <nav class="pagination" aria-label="文章翻页">
+          <% if (page.prev_link) { %><a href="<%- url_for(page.prev_link) %>">上一页</a><% } %>
+          <% if (page.next_link) { %><a href="<%- url_for(page.next_link) %>">下一页</a><% } %>
+        </nav>
+      <% } %>
+    </div>
+
+    <aside>
+      <div class="side-box">
+        <h3>关于这个博客</h3>
+        <p><%= theme.about_text %></p>
+      </div>
+
+      <div class="side-box" id="links">
+        <h3>常用链接</h3>
+        <ul>
+          <% theme.links.forEach(function(link) { %>
+            <li><a href="<%= link.url %>" target="_blank" rel="noopener noreferrer"><%= link.name %></a></li>
+          <% }); %>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-heading">
+    <h2 class="section-title">项目与计划</h2>
+  </div>
+
+  <div class="projects">
+    <% theme.projects.forEach(function(project) { %>
+      <article class="project">
+        <h3><%= project.title %></h3>
+        <p><%= project.description %></p>
+      </article>
+    <% }); %>
+  </div>
+</section>

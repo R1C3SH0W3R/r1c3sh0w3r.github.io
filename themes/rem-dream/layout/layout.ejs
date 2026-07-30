@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="<%= page.description || config.description %>">
+  <meta name="theme-color" content="#fff8fb">
+  <link rel="icon" href="<%- url_for('/favicon.png') %>" type="image/png">
+  <title><%= page.title ? page.title + ' · ' : '' %><%= config.title %></title>
+  <link rel="stylesheet" href="<%- url_for('/live2d/css/live2d.css') %>">
+  <link rel="stylesheet" href="<%- url_for('/css/style.css') %>">
+</head>
+<body class="layout-<%= page.layout || 'page' %>">
+  <video
+    id="anime-bg"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="<%- url_for(theme.background.poster) %>"
+    aria-hidden="true"
+  >
+    <source src="<%- url_for(theme.background.video) %>" type="video/mp4" media="(min-width: 821px)">
+  </video>
+
+  <div id="anime-bg-shade" aria-hidden="true"></div>
+  <div id="tsparticles" aria-hidden="true"></div>
+
+  <header>
+    <div class="container nav">
+      <a class="brand" href="<%- url_for('/') %>">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span><%= theme.brand %></span>
+      </a>
+      <nav class="nav-links" aria-label="主导航">
+        <a href="<%- url_for('/') %>#posts">文章</a>
+        <a href="<%- url_for('/') %>#projects">项目</a>
+        <a href="<%- url_for('/') %>#about">关于</a>
+        <a href="<%- url_for('/') %>#links">链接</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="top">
+    <%- body %>
+  </main>
+
+  <footer>
+    <div class="container">© <%= date(Date.now(), 'YYYY') %> <%= theme.footer_text %> · Powered by Hexo & GitHub Pages</div>
+  </footer>
+
+  <div id="rembox">
+    <div id="landlord">
+      <div class="message" style="opacity:0"></div>
+      <canvas id="live2d" width="500" height="560" class="live2d"></canvas>
+      <input name="live_talk" id="live_talk" value="1" type="hidden">
+    </div>
+    <div id="open_live2d"></div>
+  </div>
+
+  <script src="<%- url_for('/live2d/js/jquery.min.js') %>"></script>
+  <script src="<%- url_for('/live2d/js/live2d.js') %>"></script>
+  <script src="<%- url_for('/live2d/js/message.js') %>"></script>
+  <script src="<%- url_for('/assets/vendor/tsparticles/tsparticles.engine.min.js') %>"></script>
+  <script src="<%- url_for('/assets/vendor/tsparticles/tsparticles.bundle.min.js') %>"></script>
+  <script src="<%- url_for('/js/effects.js') %>"></script>
+</body>
+</html>
