@@ -111,6 +111,86 @@ window.addEventListener("load", async function () {
 });
 
 (function () {
+  const calendars = document.querySelectorAll("[data-calendar]");
+
+  calendars.forEach(function (calendar) {
+    const title = calendar.querySelector("[data-calendar-title]");
+    const days = calendar.querySelector("[data-calendar-days]");
+    const currentDateLabel = calendar.querySelector("[data-calendar-date]");
+    const previousButton = calendar.querySelector("[data-calendar-prev]");
+    const nextButton = calendar.querySelector("[data-calendar-next]");
+    const todayButton = calendar.querySelector("[data-calendar-today]");
+    const today = new Date();
+    const postDates = new Set((calendar.dataset.postDates || "").split(",").filter(Boolean));
+    let visibleMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    function dateKey(value) {
+      const year = value.getFullYear();
+      const month = String(value.getMonth() + 1).padStart(2, "0");
+      const day = String(value.getDate()).padStart(2, "0");
+      return year + "-" + month + "-" + day;
+    }
+
+    function renderCalendar() {
+      const year = visibleMonth.getFullYear();
+      const month = visibleMonth.getMonth();
+      const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
+
+      title.textContent = new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "long" }).format(visibleMonth);
+      days.setAttribute("aria-label", title.textContent);
+      days.replaceChildren();
+
+      for (let index = 0; index < 42; index += 1) {
+        const value = new Date(year, month, index - firstWeekday + 1);
+        const cell = document.createElement("span");
+        const isToday = dateKey(value) === dateKey(today);
+        const hasPost = postDates.has(dateKey(value));
+        const weekday = value.getDay();
+
+        cell.className = "calendar-day";
+        cell.textContent = value.getDate();
+        cell.setAttribute("role", "gridcell");
+        cell.setAttribute("aria-label", new Intl.DateTimeFormat("zh-CN", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        }).format(value) + (hasPost ? "，有文章" : ""));
+        cell.classList.toggle("is-other-month", value.getMonth() !== month);
+        cell.classList.toggle("is-weekend", weekday === 0 || weekday === 6);
+        cell.classList.toggle("has-post", hasPost);
+        cell.classList.toggle("is-today", isToday);
+
+        if (isToday) { cell.setAttribute("aria-current", "date"); }
+        days.appendChild(cell);
+      }
+    }
+
+    previousButton.addEventListener("click", function () {
+      visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() - 1, 1);
+      renderCalendar();
+    });
+
+    nextButton.addEventListener("click", function () {
+      visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1);
+      renderCalendar();
+    });
+
+    todayButton.addEventListener("click", function () {
+      visibleMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      renderCalendar();
+    });
+
+    currentDateLabel.dateTime = dateKey(today);
+    currentDateLabel.textContent = new Intl.DateTimeFormat("zh-CN", {
+      month: "long",
+      day: "numeric",
+      weekday: "short"
+    }).format(today);
+    renderCalendar();
+  });
+})();
+
+(function () {
   const symbols = ["♡", "✦", "❀", "☆"];
   const colors = ["#ef78a8", "#66bfd4", "#f2bd45", "#a28de2"];
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");

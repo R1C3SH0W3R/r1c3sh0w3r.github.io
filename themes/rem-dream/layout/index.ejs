@@ -56,6 +56,23 @@
     </div>
 
     <aside>
+      <% const calendarPostDates = site.posts.map(function(post) { return date(post.date, 'YYYY-MM-DD'); }); %>
+      <div class="side-box calendar-widget" data-calendar data-post-dates="<%= calendarPostDates.join(',') %>">
+        <div class="calendar-header">
+          <button class="calendar-nav" type="button" data-calendar-prev aria-label="上一个月" title="上一个月">‹</button>
+          <h3 data-calendar-title aria-live="polite"></h3>
+          <button class="calendar-nav" type="button" data-calendar-next aria-label="下一个月" title="下一个月">›</button>
+        </div>
+        <div class="calendar-weekdays" aria-hidden="true">
+          <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+        </div>
+        <div class="calendar-days" data-calendar-days role="grid"></div>
+        <div class="calendar-footer">
+          <button type="button" class="calendar-today" data-calendar-today>今天</button>
+          <time data-calendar-date></time>
+        </div>
+      </div>
+
       <div class="side-box">
         <h3>关于这个博客</h3>
         <p><%= theme.about_text %></p>

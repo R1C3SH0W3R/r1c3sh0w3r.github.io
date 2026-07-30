@@ -382,6 +382,138 @@ section {
   color: var(--pink);
 }
 
+.calendar-widget {
+  padding: 18px;
+}
+
+.calendar-header {
+  min-height: 36px;
+  display: grid;
+  grid-template-columns: 36px 1fr 36px;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-header h3 {
+  margin: 0;
+  text-align: center;
+  font-size: 18px;
+}
+
+.calendar-nav {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--text);
+  background: rgba(255, 255, 255, .72);
+  font: inherit;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.calendar-nav:hover {
+  border-color: var(--pink);
+  color: #fff;
+  background: var(--pink);
+}
+
+.calendar-weekdays,
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-weekdays {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.calendar-weekdays span,
+.calendar-day {
+  display: grid;
+  place-items: center;
+}
+
+.calendar-day {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.calendar-day.is-weekend {
+  color: #b64f79;
+}
+
+.calendar-day.is-other-month {
+  color: #b8a8b1;
+}
+
+.calendar-day.has-post::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--blue);
+  transform: translateX(-50%);
+}
+
+.calendar-day.is-today {
+  color: #fff;
+  background: var(--pink);
+  font-weight: 750;
+  box-shadow: 0 5px 14px rgba(223, 111, 156, .3);
+}
+
+.calendar-day.is-today::after {
+  background: #fff;
+}
+
+.calendar-footer {
+  min-height: 34px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.calendar-today {
+  padding: 4px 10px;
+  border: 1px solid rgba(223, 111, 156, .3);
+  border-radius: 999px;
+  color: #a6426c;
+  background: var(--pink-soft);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.calendar-today:hover {
+  color: #fff;
+  background: var(--pink);
+}
+
+.calendar-footer time {
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .projects {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
