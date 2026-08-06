@@ -26,7 +26,49 @@
       </video>
     <% } %>
 
-    <div class="article-content"><%- page.content %></div>
+    <% const contentBlocks = Array.isArray(page.content_blocks) ? page.content_blocks : []; %>
+    <div class="article-content">
+      <% if (page.content && page.content.trim()) { %>
+        <div class="article-block article-block-text article-legacy-content"><%- page.content %></div>
+      <% } %>
+
+      <% contentBlocks.forEach(function(block) { %>
+        <% const blockType = block.type || block._block; %>
+        <% if (blockType === 'text' && block.content) { %>
+          <div class="article-block article-block-text"><%- markdown(block.content) %></div>
+        <% } %>
+        <% if (blockType === 'image' && block.src) { %>
+          <figure class="article-block article-media-block">
+            <img src="<%- url_for(block.src) %>" alt="<%= block.alt || page.title %>" loading="lazy" decoding="async">
+            <% if (block.caption) { %><figcaption><%= block.caption %></figcaption><% } %>
+          </figure>
+        <% } %>
+        <% if (blockType === 'video' && block.src) { %>
+          <figure class="article-block article-media-block">
+            <video controls preload="metadata" playsinline<% if (block.poster) { %> poster="<%- url_for(block.poster) %>"<% } %>>
+              <source src="<%- url_for(block.src) %>">
+              您的浏览器暂不支持播放此视频。
+            </video>
+            <% if (block.caption) { %><figcaption><%= block.caption %></figcaption><% } %>
+          </figure>
+        <% } %>
+        <% if (blockType === 'embed' && block.url) { %>
+          <% const embedUrl = String(block.url).trim(); %>
+          <% if (/^(https?:)?\/\//i.test(embedUrl)) { %>
+            <figure class="article-block article-media-block">
+              <iframe class="article-embed-frame"
+                      src="<%= embedUrl %>"
+                      title="<%= block.title || '外部视频' %>"
+                      loading="lazy"
+                      referrerpolicy="strict-origin-when-cross-origin"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+              <% if (block.caption) { %><figcaption><%= block.caption %></figcaption><% } %>
+            </figure>
+          <% } %>
+        <% } %>
+      <% }); %>
+    </div>
 
     <% if (page.tags && page.tags.length) { %>
       <div class="article-tags" aria-label="文章标签">

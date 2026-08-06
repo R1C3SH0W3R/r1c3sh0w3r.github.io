@@ -85,10 +85,86 @@ content:
           media: post_images
           extensions: [jpg, jpeg, png, webp]
           rename: safe
+      - name: content_blocks
+        label: 图文正文（可自由排序）
+        type: block
+        list: true
+        blockKey: type
+        description: 按文章顺序添加文字、图片、视频或外部视频，可以拖动调整位置。
+        blocks:
+          - name: text
+            label: 文字段落
+            fields:
+              - name: content
+                label: 文字内容
+                type: rich-text
+                required: true
+                options:
+                  format: markdown
+                  media: post_images
+                  extensions: [jpg, jpeg, png, webp, gif]
+                  rename: safe
+                  switcher: true
+          - name: image
+            label: 图片
+            fields:
+              - name: src
+                label: 上传或选择图片
+                type: image
+                required: true
+                options:
+                  media: post_images
+                  extensions: [jpg, jpeg, png, webp, gif]
+                  rename: safe
+              - name: alt
+                label: 图片说明
+                type: string
+              - name: caption
+                label: 图片下方文字
+                type: string
+          - name: video
+            label: 上传视频
+            fields:
+              - name: src
+                label: 上传或选择视频
+                type: file
+                required: true
+                options:
+                  media: post_videos
+                  extensions: [mp4, webm]
+                  categories: [video]
+                  rename: safe
+              - name: poster
+                label: 视频封面图
+                type: image
+                options:
+                  media: post_images
+                  extensions: [jpg, jpeg, png, webp]
+                  rename: safe
+              - name: caption
+                label: 视频下方文字
+                type: string
+          - name: embed
+            label: 外部视频（B站或 YouTube）
+            fields:
+              - name: url
+                label: 播放器嵌入地址
+                type: string
+                required: true
+                description: 填写以 https:// 或 // 开头的播放器地址，不要填写普通视频页面地址。
+                pattern:
+                  regex: "^(https?:)?//.+$"
+                  message: 请输入以 https:// 或 // 开头的播放器嵌入地址。
+              - name: title
+                label: 视频标题
+                type: string
+              - name: caption
+                label: 视频下方文字
+                type: string
       - name: body
-        label: 文章正文
+        label: 旧版 Markdown 正文
         type: rich-text
-        required: true
+        description: 旧文章内容会保留在这里；新文章请优先使用上方「图文正文」自由穿插媒体。
         options:
           format: markdown
           media: post_images

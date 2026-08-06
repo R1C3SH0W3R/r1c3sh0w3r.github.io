@@ -682,6 +682,42 @@ section {
   border: 0;
 }
 
+.article-block-text > :first-child,
+.article-media-block:first-child {
+  margin-top: 0;
+}
+
+.article-block-text > :last-child {
+  margin-bottom: 0;
+}
+
+.article-block + .article-block {
+  margin-top: 28px;
+}
+
+.article-media-block {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.article-media-block img,
+.article-media-block video,
+.article-media-block iframe {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.article-media-block figcaption {
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.article-embed-frame {
+  background: #1f1b20;
+}
+
 .article-content blockquote {
   padding: 12px 18px;
   border-left: 4px solid var(--blue);
