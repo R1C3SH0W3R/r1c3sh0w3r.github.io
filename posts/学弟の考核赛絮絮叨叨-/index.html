@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="有关小学弟考核赛我出的那三道题的叨叨">
+  <meta name="theme-color" content="#fff8fb">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <title>学弟の考核赛絮絮叨叨 · 绯野のblog</title>
+  <link rel="stylesheet" href="/live2d/css/live2d.css">
+  <link rel="stylesheet" href="/css/style.css">
+<meta name="generator" content="Hexo 8.1.2"></head>
+<body class="layout-post">
+  <video
+    id="anime-bg"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="/assets/video/yukino-bg-preview.jpg"
+    aria-hidden="true"
+  >
+    <source src="/assets/video/yukino-bg.mp4" type="video/mp4" media="(min-width: 821px)">
+  </video>
+
+  <div id="anime-bg-shade" aria-hidden="true"></div>
+  <div id="tsparticles" aria-hidden="true"></div>
+
+  <header>
+    <div class="container nav">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>绯野のblog</span>
+      </a>
+      <nav class="nav-links" aria-label="主导航">
+        <a href="/#posts">文章</a>
+        <a href="/#projects">项目</a>
+        <a href="/#about">关于</a>
+        <a href="/#links">链接</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="top">
+    <article class="article-page">
+  <header class="article-hero">
+    <a class="article-back" href="/#posts">返回文章列表</a>
+    <h1>学弟の考核赛絮絮叨叨</h1>
+    <div class="article-meta">
+      <time datetime="2026-08-06T12:40:00.000Z">2026 年 8 月 6 日</time>
+      
+        
+          <a class="article-category" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+        
+      
+    </div>
+  </header>
+
+  <div class="article-card">
+    
+
+    
+
+    
+    <div class="article-content">
+      
+        <div class="article-block article-block-text article-legacy-content"><h1 id="万物皆可逆系列复现教程"><a href="#万物皆可逆系列复现教程" class="headerlink" title="万物皆可逆系列复现教程"></a><strong>万物皆可逆系列复现教程</strong></h1><hr>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a><strong>目录</strong></h2><ol>
+<li><a href="#%E4%B8%80%E5%AF%BC%E8%A8%80">导言</a></li>
+<li><a href="#%E4%BA%8C%E5%85%B6%E4%B8%80%E5%8C%BB%E9%99%A2%E5%AF%BC%E8%AF%8A%E7%B3%BB%E7%BB%9F%E6%95%85%E9%9A%9C%E5%95%A6">其一 · 医院导诊系统故障啦</a></li>
+<li><a href="#%E4%B8%89%E5%85%B6%E4%BA%8C%E6%89%93%E5%BC%80-zgh-%E8%A2%AB%E7%BD%91%E7%BB%9C%E5%B0%81%E9%97%AD%E7%9A%84%E5%86%85%E5%BF%83">其二 · 打开 ZGH 被网络封闭的内心</a></li>
+<li><a href="#%E5%9B%9B%E5%85%B6%E4%B8%89%E8%B4%A7%E5%B8%81%E3%81%AE%E6%88%98%E4%BA%89">其三 · 货币の战争</a></li>
+</ol>
+<hr>
+<h2 id="一、导言"><a href="#一、导言" class="headerlink" title="一、导言"></a><strong>一、导言</strong></h2><p>我说过，万物皆可逆。所以这一次给学弟出题，本质是想让他大大滴打开脑洞；当然，我的脑洞也是大大滴打开了。</p>
+<p><img src="/uploads/images/image-20260802233555970.png" alt="image.png"></p>
+<p>题目要求是：做不出来我也不鸭梨，能做出来我就大大地夸。<br>不说多了，下面开始这三道题的复现。</p>
+<hr>
+<h2 id="二、其一：医院导诊系统故障啦"><a href="#二、其一：医院导诊系统故障啦" class="headerlink" title="二、其一：医院导诊系统故障啦"></a><strong>二、其一：医院导诊系统故障啦</strong></h2><h3 id="1-题目信息"><a href="#1-题目信息" class="headerlink" title="1. 题目信息"></a><strong>1. 题目信息</strong></h3><table>
+<thead>
+<tr>
+<th><strong>项目</strong></th>
+<th><strong>内容</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>难度</td>
+<td>中等+</td>
+</tr>
+<tr>
+<td>出题人</td>
+<td>0</td>
+</tr>
+<tr>
+<td>形式</td>
+<td>容器题 + ELF（很像 pwn，但不是）</td>
+</tr>
+</tbody></table>
+<p><strong>题面简述：</strong></p>
+<p>前段时间，0 的朋友脚崴了，ta 发 vx 给 0 酱说医院的导诊系统坏了。热心的 0 酱去修，结果那边的人只说要 <strong>xor 一个</strong> <code>0x91</code>，0 酱当场宕机：这素？</p>
+<h3 id="2-出题思路"><a href="#2-出题思路" class="headerlink" title="2. 出题思路"></a><strong>2. 出题思路</strong></h3><p>出题任务下来时脑子是空的，于是无聊和朋友 gossip。朋友外面玩得正开心把脚崴了，去医院一肚子怨气，闲谈中吐槽医院导诊——灵感就来了。</p>
+<p>附件一开始其实只想给个日志文件让小学弟逆；后面想了一下还是做个人，做成了容器 + ELF。</p>
+<h3 id="3-运行表现"><a href="#3-运行表现" class="headerlink" title="3. 运行表现"></a><strong>3. 运行表现</strong></h3><p>进入容器后，能看到类似医院导诊的系统界面（为什么叫 Genshin 你别管）：</p>
+<p><img src="/uploads/images/image-20260802233555972.png" alt="image.png"></p>
+<p>操作很直观：需要什么服务，输入对应数字即可。</p>
+<p>问题是：输入哪个数字，才能进入题面里说的「故障修复」界面？</p>
+<h3 id="4-逆向分析"><a href="#4-逆向分析" class="headerlink" title="4. 逆向分析"></a><strong>4. 逆向分析</strong></h3><p>把 ELF 拖进 IDA：</p>
+<p><img src="/uploads/images/image-20260802233555976.png" alt="image.png"></p>
+<p><code>main</code> 很长。普通 <code>Shift+F12</code> 看字符串不一定够用，可以按下面这种方式过滤&#x2F;定位：</p>
+<p><img src="/uploads/images/image-20260802233555980.png" alt="image.png"></p>
+<p>方法繁琐，但主要拼耐心，迟早能锁定关键位置：</p>
+<p><img src="/uploads/images/image-20260802233555988.png" alt="image.png"></p>
+<p>哦灭得多！</p>
+<p>基本可以以这里为核心看逻辑。觉得代码难看的话，也可以继续「翻牌」定位：</p>
+<p><img src="/uploads/images/image-20260802233555990.png" alt="image.png"></p>
+<p>这里可以看到「排队叫号查询」，对应主页 <strong>3 号</strong> 服务。相关逻辑大致如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">puts(asc_40321D);                   // 排队叫号查询</span><br><span class="line">__printf_chk();                     // 输入你的卡号</span><br><span class="line">fflush(stdout);</span><br><span class="line">if ( (unsigned int)sub_402540(s, 60) )  // 读取输入进行比对</span><br><span class="line">    goto LABEL_59;</span><br><span class="line">strcpy(v49, &quot;MNT-2419&quot;);            // 秘密位置</span><br><span class="line">if ( *(_QWORD *)s == 0x393134322D544E4DLL &amp;&amp; !v53 )</span><br><span class="line">&#123;</span><br><span class="line">    puts(&amp;byte_403C90);             // 输入正确即可进入</span><br></pre></td></tr></table></figure>
+
+<p>也就是说：进入 3 号服务后，把卡号 <code>MNT-2419</code> 打进去。进入后大致长这样：</p>
+<p><img src="/uploads/images/image-20260802233555996.png" alt="image.png"></p>
+<p>窗口&#x2F;选项仍可能很多。关键点在于：</p>
+<p><img src="/uploads/images/image-20260802233556000.png" alt="image.png"></p>
+<p><strong>只有进入序号 7 解 XOR 才会有答案。</strong><br>为什么是 7？自己去查 ASCII。</p>
+<h3 id="5-最后一关：XOR-0x91-3-秒时限"><a href="#5-最后一关：XOR-0x91-3-秒时限" class="headerlink" title="5. 最后一关：XOR 0x91 + 3 秒时限"></a><strong>5. 最后一关：XOR</strong> <code>0x91</code> <strong>+ 3 秒时限</strong></h3><p><img src="/uploads/images/image-20260802233556004.png" alt="image.png"></p>
+<p>解密算法很直接：对校验码做 <code>xor 0x91</code>。同时还要注意：</p>
+<p><img src="/uploads/images/image-20260802233556010.png" alt="image.png"></p>
+<p>意思是：<strong>只给你三秒</strong>，算完还要输进去，逾期不候。</p>
+<p>两条路：</p>
+<ol>
+<li>绝对相信自己的手速</li>
+<li>绝对相信计算机的速度</li>
+</ol>
+<p>年纪上来了，手速跟不上，只能上脚本。直接 Python 自动化，别说 3 秒，1 秒就破。</p>
+<h3 id="6-自动化脚本"><a href="#6-自动化脚本" class="headerlink" title="6. 自动化脚本"></a><strong>6. 自动化脚本</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">import re</span><br><span class="line">import socket</span><br><span class="line">import sys</span><br><span class="line">​</span><br><span class="line">HOST = &quot;&quot;</span><br><span class="line">PORT = 0  # 按实际环境填写</span><br><span class="line">​</span><br><span class="line">​</span><br><span class="line">def recv_until(sock, markers, timeout=8):</span><br><span class="line">    sock.settimeout(timeout)</span><br><span class="line">    buf = b&quot;&quot;</span><br><span class="line">    while True:</span><br><span class="line">        try:</span><br><span class="line">            chunk = sock.recv(4096)</span><br><span class="line">            if not chunk:</span><br><span class="line">                break</span><br><span class="line">            buf += chunk</span><br><span class="line">            text = buf.decode(&quot;utf-8&quot;, &quot;replace&quot;)</span><br><span class="line">            for m in markers:</span><br><span class="line">                if m in text:</span><br><span class="line">                    return text</span><br><span class="line">        except socket.timeout:</span><br><span class="line">            break</span><br><span class="line">    return buf.decode(&quot;utf-8&quot;, &quot;replace&quot;)</span><br><span class="line">​</span><br><span class="line">​</span><br><span class="line">def sendline(sock, s):</span><br><span class="line">    sock.sendall((s + &quot;\n&quot;).encode())</span><br><span class="line">​</span><br><span class="line">​</span><br><span class="line">def main():</span><br><span class="line">    host = sys.argv[1] if len(sys.argv) &gt; 1 else HOST</span><br><span class="line">    port = int(sys.argv[2]) if len(sys.argv) &gt; 2 else PORT</span><br><span class="line">    s = socket.create_connection((host, port), timeout=10)</span><br><span class="line">​</span><br><span class="line">    print(recv_until(s, [&quot;&gt; &quot;]), end=&quot;&quot;)</span><br><span class="line">​</span><br><span class="line">    sendline(s, &quot;3&quot;)</span><br><span class="line">    print(recv_until(s, [&quot;: &quot;, &quot;：&quot;]), end=&quot;&quot;)</span><br><span class="line">​</span><br><span class="line">    sendline(s, &quot;MNT-2419&quot;)</span><br><span class="line">    print(recv_until(s, [&quot;&gt; &quot;]), end=&quot;&quot;)</span><br><span class="line">​</span><br><span class="line">    sendline(s, &quot;7&quot;)</span><br><span class="line">    text = recv_until(s, [&quot;: &quot;, &quot;结果&quot;])</span><br><span class="line">    print(text, end=&quot;&quot;)</span><br><span class="line">​</span><br><span class="line">    m = re.search(r&quot;校验码:\s*([0-9a-fA-F]&#123;8&#125;)&quot;, text)</span><br><span class="line">    if not m:</span><br><span class="line">        m = re.search(r&quot;([0-9a-fA-F]&#123;8&#125;)&quot;, text)</span><br><span class="line">    if not m:</span><br><span class="line">        print(&quot;challenge not found&quot;, file=sys.stderr)</span><br><span class="line">        s.close()</span><br><span class="line">        sys.exit(1)</span><br><span class="line">​</span><br><span class="line">    challenge = m.group(1)</span><br><span class="line">    password = bytes(b ^ 0x91 for b in bytes.fromhex(challenge)).hex()</span><br><span class="line">    print(f&quot;\n[+] challenge=&#123;challenge&#125; password=&#123;password&#125;&quot;)</span><br><span class="line">​</span><br><span class="line">    sendline(s, password)</span><br><span class="line">    try:</span><br><span class="line">        out = s.recv(8192).decode(&quot;utf-8&quot;, &quot;replace&quot;)</span><br><span class="line">        print(out, end=&quot;&quot;)</span><br><span class="line">        fm = re.search(r&quot;HYNUCTF\&#123;[^&#125;]+\&#125;&quot;, out)</span><br><span class="line">        if fm:</span><br><span class="line">            print(f&quot;\n[+] FLAG: &#123;fm.group(0)&#125;&quot;)</span><br><span class="line">    except Exception as e:</span><br><span class="line">        print(e, file=sys.stderr)</span><br><span class="line">    finally:</span><br><span class="line">        s.close()</span><br><span class="line">​</span><br><span class="line">​</span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-小结"><a href="#7-小结" class="headerlink" title="7. 小结"></a><strong>7. 小结</strong></h3><p>出完之后才发现这题还是偏简单，不太需要太重的静态分析。算了，就这样吧。</p>
+<p><strong>解题路径速记：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">菜单 3（排队叫号）</span><br><span class="line">  → 卡号 MNT-2419</span><br><span class="line">  → 选项 7（XOR 修复）</span><br><span class="line">  → 读校验码，逐字节 xor 0x91</span><br><span class="line">  → 3 秒内回传 → flag</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、其二：打开-ZGH-被网络封闭的内心"><a href="#三、其二：打开-ZGH-被网络封闭的内心" class="headerlink" title="三、其二：打开 ZGH 被网络封闭的内心"></a><strong>三、其二：打开 ZGH 被网络封闭的内心</strong></h2><h3 id="1-出题背景"><a href="#1-出题背景" class="headerlink" title="1. 出题背景"></a><strong>1. 出题背景</strong></h3><p>有天晚上不记得谁说了一嘴「逆向 ZGH」，我就出了。刚好琢磨 web 逆向挺久（源自之前逆向 4399），觉得 web 逆向也不是不行。</p>
+<p>这一题直接挂服务器，<strong>没有附件</strong>——想要附件，有本事自己搞出来。</p>
+<p><img src="/uploads/images/image-20260802233556012.png" alt="image.png"></p>
+<ul>
+<li>在线地址：<a target="_blank" rel="noopener" href="http://120.26.117.207:8080/">HYNU Console</a></li>
+<li>会 web 的也许能走越权等思路自己试  </li>
+<li>这里按 <strong>reverse</strong> 路线讲理想做法</li>
+</ul>
+<h3 id="2-看网页源码"><a href="#2-看网页源码" class="headerlink" title="2. 看网页源码"></a><strong>2. 看网页源码</strong></h3><p><img src="blob:https:/app.pagescms.org/eedf5dae-c0db-42e4-8a94-0708f24f150f" alt="image.png"></p>
+<p>跳到前端脚本：</p>
+<p><img src="/uploads/images/image-20260802233556016.png" alt="image.png"></p>
+<p>核心 JS（<code>app.min.js</code> 逻辑）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line">&quot;use strict&quot;;</span><br><span class="line">(() =&gt; &#123;</span><br><span class="line">  const form = document.getElementById(&quot;gate-form&quot;);</span><br><span class="line">  const status = document.getElementById(&quot;status&quot;);</span><br><span class="line">  const submit = document.getElementById(&quot;submit&quot;);</span><br><span class="line">  const screen = document.getElementById(&quot;screen&quot;);</span><br><span class="line">  const markerText = &quot;HYNU-WASM-PAYLOAD\0&quot;;</span><br><span class="line">  const marker = new TextEncoder().encode(markerText);</span><br><span class="line">  const assetPath = [&quot;&quot;, &quot;assets&quot;, &quot;media&quot;, &quot;cache&quot;, &quot;2026&quot;, &quot;07&quot;, &quot;31&quot;, &quot;r&quot;, &quot;e&quot;, &quot;v&quot;, &quot;avatar-index.png&quot;].join(&quot;/&quot;);</span><br><span class="line">  let wasmReady;</span><br><span class="line">​</span><br><span class="line">  function deriveKey(seed) &#123;</span><br><span class="line">    let x = 0x811c9dc5;</span><br><span class="line">    for (let i = 0; i &lt; seed.length; i += 1) &#123;</span><br><span class="line">      x ^= seed.charCodeAt(i);</span><br><span class="line">      x = Math.imul(x, 0x01000193) &gt;&gt;&gt; 0;</span><br><span class="line">    &#125;</span><br><span class="line">    const key = new Uint8Array(32);</span><br><span class="line">    for (let i = 0; i &lt; key.length; i += 1) &#123;</span><br><span class="line">      x ^= x &lt;&lt; 13;</span><br><span class="line">      x ^= x &gt;&gt;&gt; 17;</span><br><span class="line">      x ^= x &lt;&lt; 5;</span><br><span class="line">      key[i] = x &amp; 255;</span><br><span class="line">    &#125;</span><br><span class="line">    return key;</span><br><span class="line">  &#125;</span><br><span class="line">​</span><br><span class="line">  function findMarker(bytes) &#123;</span><br><span class="line">    outer:</span><br><span class="line">    for (let i = bytes.length - marker.length - 4; i &gt;= 0; i -= 1) &#123;</span><br><span class="line">      for (let j = 0; j &lt; marker.length; j += 1) &#123;</span><br><span class="line">        if (bytes[i + j] !== marker[j]) continue outer;</span><br><span class="line">      &#125;</span><br><span class="line">      return i;</span><br><span class="line">    &#125;</span><br><span class="line">    return -1;</span><br><span class="line">  &#125;</span><br><span class="line">​</span><br><span class="line">  function decrypt(bytes) &#123;</span><br><span class="line">    const seed = [</span><br><span class="line">      document.documentElement.dataset.cacheSeed || &quot;&quot;,</span><br><span class="line">      document.body.dataset.profile || &quot;&quot;,</span><br><span class="line">      document.querySelector(&quot;meta[name=&#x27;asset-profile&#x27;]&quot;)?.content || &quot;&quot;</span><br><span class="line">    ].join(&quot;|&quot;);</span><br><span class="line">    const key = deriveKey(seed);</span><br><span class="line">    const out = new Uint8Array(bytes.length);</span><br><span class="line">    for (let i = 0; i &lt; bytes.length; i += 1) &#123;</span><br><span class="line">      out[i] = bytes[i] ^ key[i &amp; 31] ^ ((i * 31 + 17) &amp; 255);</span><br><span class="line">    &#125;</span><br><span class="line">    return out;</span><br><span class="line">  &#125;</span><br><span class="line">​</span><br><span class="line">  async function loadGate() &#123;</span><br><span class="line">    const response = await fetch(assetPath, &#123; cache: &quot;no-store&quot; &#125;);</span><br><span class="line">    if (!response.ok) throw new Error(&quot;asset&quot;);</span><br><span class="line">    const carrier = new Uint8Array(await response.arrayBuffer());</span><br><span class="line">    const offset = findMarker(carrier);</span><br><span class="line">    if (offset &lt; 0) throw new Error(&quot;marker&quot;);</span><br><span class="line">    const view = new DataView(carrier.buffer, carrier.byteOffset + offset + marker.length, 4);</span><br><span class="line">    const length = view.getUint32(0, false);</span><br><span class="line">    const start = offset + marker.length + 4;</span><br><span class="line">    const encrypted = carrier.slice(start, start + length);</span><br><span class="line">    if (encrypted.length !== length) throw new Error(&quot;length&quot;);</span><br><span class="line">    const wasmBytes = decrypt(encrypted);</span><br><span class="line">    const module = await WebAssembly.instantiate(wasmBytes, &#123;&#125;);</span><br><span class="line">    return module.instance.exports;</span><br><span class="line">  &#125;</span><br><span class="line">​</span><br><span class="line">  function writeString(memory, pointer, value) &#123;</span><br><span class="line">    const bytes = new TextEncoder().encode(value);</span><br><span class="line">    new Uint8Array(memory.buffer).set(bytes, pointer);</span><br><span class="line">    return bytes.length;</span><br><span class="line">  &#125;</span><br><span class="line">​</span><br><span class="line">  function renderConsole(payload) &#123;</span><br><span class="line">    screen.innerHTML = &quot;&quot;;</span><br><span class="line">    const box = document.createElement(&quot;section&quot;);</span><br><span class="line">    box.className = &quot;dashboard&quot;;</span><br><span class="line">    const title = document.createElement(&quot;h1&quot;);</span><br><span class="line">    title.textContent = payload.title || &quot;Console&quot;;</span><br><span class="line">    const flag = document.createElement(&quot;code&quot;);</span><br><span class="line">    flag.className = &quot;flag&quot;;</span><br><span class="line">    flag.textContent = payload.flag;</span><br><span class="line">    box.append(title, flag);</span><br><span class="line">    screen.append(box);</span><br><span class="line">  &#125;</span><br><span class="line">​</span><br><span class="line">  async function unlock(username, password) &#123;</span><br><span class="line">    const res = await fetch(&quot;/api/unlock&quot;, &#123;</span><br><span class="line">      method: &quot;POST&quot;,</span><br><span class="line">      headers: &#123; &quot;Content-Type&quot;: &quot;application/json&quot; &#125;,</span><br><span class="line">      body: JSON.stringify(&#123; username, password &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">    const payload = await res.json().catch(() =&gt; (&#123; ok: false &#125;));</span><br><span class="line">    if (!res.ok || !payload.ok) throw new Error(payload.message || &quot;Access denied.&quot;);</span><br><span class="line">    return payload;</span><br><span class="line">  &#125;</span><br><span class="line">​</span><br><span class="line">  wasmReady = loadGate();</span><br><span class="line">​</span><br><span class="line">  form.addEventListener(&quot;submit&quot;, async event =&gt; &#123;</span><br><span class="line">    event.preventDefault();</span><br><span class="line">    submit.disabled = true;</span><br><span class="line">    status.className = &quot;status&quot;;</span><br><span class="line">    status.textContent = &quot;Checking identity.&quot;;</span><br><span class="line">    try &#123;</span><br><span class="line">      const wasm = await wasmReady;</span><br><span class="line">      const username = document.getElementById(&quot;username&quot;).value;</span><br><span class="line">      const password = document.getElementById(&quot;password&quot;).value;</span><br><span class="line">      const uPtr = 1024;</span><br><span class="line">      const pPtr = 1536;</span><br><span class="line">      const uLen = writeString(wasm.memory, uPtr, username);</span><br><span class="line">      const pLen = writeString(wasm.memory, pPtr, password);</span><br><span class="line">      if (wasm.check(uPtr, uLen, pPtr, pLen) !== 1) &#123;</span><br><span class="line">        throw new Error(&quot;Access denied.&quot;);</span><br><span class="line">      &#125;</span><br><span class="line">      const payload = await unlock(username, password);</span><br><span class="line">      renderConsole(payload);</span><br><span class="line">    &#125; catch (error) &#123;</span><br><span class="line">      status.className = &quot;status bad&quot;;</span><br><span class="line">      status.textContent = error.message === &quot;Access denied.&quot; ? &quot;Access denied.&quot; : &quot;Gate resource is not ready.&quot;;</span><br><span class="line">      submit.disabled = false;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-从-PNG-中提取-WASM"><a href="#3-从-PNG-中提取-WASM" class="headerlink" title="3. 从 PNG 中提取 WASM"></a><strong>3. 从 PNG 中提取 WASM</strong></h3><p>JS 指代资源路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/assets/media/cache/2026/07/31/r/e/v/avatar-index.png</span><br></pre></td></tr></table></figure>
+
+<p>这不是普通图片：</p>
+<p><img src="file:/D:/programCTF/remhusband_exam/webreserve/avatar-index.png" alt="avatar-index"></p>
+<p>（图很小：1×1 像素壳 + 尾部载荷。）</p>
+<p>关键 marker：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const markerText = &quot;HYNU-WASM-PAYLOAD\0&quot;;  // 注意结尾 \0，共 18 字节</span><br></pre></td></tr></table></figure>
+
+<p>WinHex 可见 IEND 后附加数据：</p>
+<p><img src="/uploads/images/image-20260802233556024.png" alt="image.png"></p>
+<h4 id="3-1-文件布局"><a href="#3-1-文件布局" class="headerlink" title="3.1 文件布局"></a><strong>3.1 文件布局</strong></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[合法 PNG ... IEND]</span><br><span class="line">[HYNU-WASM-PAYLOAD\0]   // 18 字节</span><br><span class="line">[length: u32 BE]        // 本题 0x00000317 = 791</span><br><span class="line">[encrypted WASM]        // 791 字节密文</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-截取密文"><a href="#3-2-截取密文" class="headerlink" title="3.2 截取密文"></a><strong>3.2 截取密文</strong></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">offset = index(&quot;HYNU-WASM-PAYLOAD\0&quot;)</span><br><span class="line">length = BE_u32(file[offset+18 : offset+22])</span><br><span class="line">cipher = file[offset+22 : offset+22+length]</span><br></pre></td></tr></table></figure>
+
+<p>密文不以 <code>\0asm</code> 开头 → <strong>不是明文 WASM，需解密</strong>。</p>
+<h4 id="3-3-构造-key-并解密"><a href="#3-3-构造-key-并解密" class="headerlink" title="3.3 构造 key 并解密"></a><strong>3.3 构造 key 并解密</strong></h4><p>seed 由 HTML 三个字段用 <code>|</code> 拼接：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data-cache-seed | data-profile | meta[name=asset-profile]</span><br></pre></td></tr></table></figure>
+
+<p>本题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theme://cdn.hynu.internal/cache/31/rev|hynuctf-quiet-gate|archive:quiet-blueprint:v1</span><br></pre></td></tr></table></figure>
+
+<p>算法：</p>
+<ol>
+<li>对 seed 做 FNV-1a（32-bit）</li>
+<li>xorshift 扩展为 32 字节 <code>key</code></li>
+<li>解密：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plain[i] = cipher[i] ^ key[i &amp; 31] ^ ((i * 31 + 17) &amp; 0xFF)</span><br></pre></td></tr></table></figure>
+
+<p>解密后文件头：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00 61 73 6D 01 00 00 00   →  \0asm + version 1</span><br></pre></td></tr></table></figure>
+
+<p>得到 <code>gate.wasm</code>，再用 <code>wasm2c</code> 等工具分析。</p>
+<h3 id="4-分析-check：还原用户名-密码"><a href="#4-分析-check：还原用户名-密码" class="headerlink" title="4. 分析 check：还原用户名 &#x2F; 密码"></a><strong>4. 分析</strong> <code>check</code><strong>：还原用户名 &#x2F; 密码</strong></h3><h4 id="4-1-函数原型"><a href="#4-1-函数原型" class="headerlink" title="4.1 函数原型"></a><strong>4.1 函数原型</strong></h4><p>前端调用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wasm.check(uPtr, uLen, pPtr, pLen)</span><br></pre></td></tr></table></figure>
+
+<p><code>wasm2c</code> 导出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/* export: &#x27;check&#x27; */</span><br><span class="line">u32 w2c_gate_check(w2c_gate* instance, u32 var_p0, u32 var_p1, u32 var_p2, u32 var_p3);</span><br><span class="line">//                                  uPtr      uLen      pPtr      pLen</span><br></pre></td></tr></table></figure>
+
+<p>真正逻辑在 <code>w2c_gate_check_0</code>：</p>
+<table>
+<thead>
+<tr>
+<th><strong>参数</strong></th>
+<th><strong>含义</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>var_p0</code></td>
+<td>用户名在 linear memory 中的指针</td>
+</tr>
+<tr>
+<td><code>var_p1</code></td>
+<td>用户名长度</td>
+</tr>
+<tr>
+<td><code>var_p2</code></td>
+<td>密码指针</td>
+</tr>
+<tr>
+<td><code>var_p3</code></td>
+<td>密码长度</td>
+</tr>
+<tr>
+<td>返回值</td>
+<td><code>1</code> 通过，<code>0</code> 失败</td>
+</tr>
+</tbody></table>
+<h4 id="4-2-长度校验"><a href="#4-2-长度校验" class="headerlink" title="4.2 长度校验"></a><strong>4.2 长度校验</strong></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 用户名长度必须为 16</span><br><span class="line">if (var_p1 != 16u) return 0;</span><br><span class="line"></span><br><span class="line">// 密码长度必须为 17</span><br><span class="line">if (var_p3 != 17u) return 0;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-3-逐字节-XOR-比较"><a href="#4-3-逐字节-XOR-比较" class="headerlink" title="4.3 逐字节 XOR 比较"></a><strong>4.3 逐字节 XOR 比较</strong></h4><p>以用户名第 0 字节为例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// username[0]</span><br><span class="line">var_i0 = i32_load8_u(... memory[uPtr + 0] ...);</span><br><span class="line">var_i0 ^= 53u;</span><br><span class="line">if (var_i0 != 71u) return 0;</span><br></pre></td></tr></table></figure>
+
+<p>等价：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if ((memory[uPtr + i] ^ A) != B) return 0;</span><br><span class="line">// 因 XOR 可逆：</span><br><span class="line">// memory[uPtr + i] == A ^ B</span><br></pre></td></tr></table></figure>
+
+<p>密码段把 <code>var_p0</code> 换成 <code>var_p2</code>，偏移 <code>0..16</code>，同一公式。全部通过返回 <code>1</code>。</p>
+<h4 id="4-4-常量表与结果"><a href="#4-4-常量表与结果" class="headerlink" title="4.4 常量表与结果"></a><strong>4.4 常量表与结果</strong></h4><p>模式：<code>input[i] ^ A == B</code> → <code>input[i] = A ^ B</code></p>
+<p><strong>用户名（16 字节）</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>i</strong></th>
+<th><strong>A</strong></th>
+<th><strong>B</strong></th>
+<th><strong>A^B</strong></th>
+<th><strong>char</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>53</td>
+<td>71</td>
+<td>114</td>
+<td>r</td>
+</tr>
+<tr>
+<td>1</td>
+<td>101</td>
+<td>0</td>
+<td>101</td>
+<td>e</td>
+</tr>
+<tr>
+<td>2</td>
+<td>149</td>
+<td>248</td>
+<td>109</td>
+<td>m</td>
+</tr>
+<tr>
+<td>3</td>
+<td>197</td>
+<td>154</td>
+<td>95</td>
+<td>_</td>
+</tr>
+<tr>
+<td>4</td>
+<td>245</td>
+<td>134</td>
+<td>115</td>
+<td>s</td>
+</tr>
+<tr>
+<td>5</td>
+<td>238</td>
+<td>135</td>
+<td>105</td>
+<td>i</td>
+</tr>
+<tr>
+<td>6</td>
+<td>30</td>
+<td>114</td>
+<td>108</td>
+<td>l</td>
+</tr>
+<tr>
+<td>7</td>
+<td>78</td>
+<td>43</td>
+<td>101</td>
+<td>e</td>
+</tr>
+<tr>
+<td>8</td>
+<td>126</td>
+<td>16</td>
+<td>110</td>
+<td>n</td>
+</tr>
+<tr>
+<td>9</td>
+<td>174</td>
+<td>218</td>
+<td>116</td>
+<td>t</td>
+</tr>
+<tr>
+<td>10</td>
+<td>167</td>
+<td>248</td>
+<td>95</td>
+<td>_</td>
+</tr>
+<tr>
+<td>11</td>
+<td>215</td>
+<td>180</td>
+<td>99</td>
+<td>c</td>
+</tr>
+<tr>
+<td>12</td>
+<td>7</td>
+<td>102</td>
+<td>97</td>
+<td>a</td>
+</tr>
+<tr>
+<td>13</td>
+<td>55</td>
+<td>84</td>
+<td>99</td>
+<td>c</td>
+</tr>
+<tr>
+<td>14</td>
+<td>103</td>
+<td>15</td>
+<td>104</td>
+<td>h</td>
+</tr>
+<tr>
+<td>15</td>
+<td>96</td>
+<td>5</td>
+<td>101</td>
+<td>e</td>
+</tr>
+</tbody></table>
+<p>→ <code>username = rem_silent_cache</code></p>
+<p><strong>密码（17 字节）</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>i</strong></th>
+<th><strong>A</strong></th>
+<th><strong>B</strong></th>
+<th><strong>A^B</strong></th>
+<th><strong>char</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>138</td>
+<td>221</td>
+<td>87</td>
+<td>W</td>
+</tr>
+<tr>
+<td>1</td>
+<td>186</td>
+<td>142</td>
+<td>52</td>
+<td>4</td>
+</tr>
+<tr>
+<td>2</td>
+<td>234</td>
+<td>153</td>
+<td>115</td>
+<td>s</td>
+</tr>
+<tr>
+<td>3</td>
+<td>26</td>
+<td>119</td>
+<td>109</td>
+<td>m</td>
+</tr>
+<tr>
+<td>4</td>
+<td>74</td>
+<td>21</td>
+<td>95</td>
+<td>_</td>
+</tr>
+<tr>
+<td>5</td>
+<td>67</td>
+<td>114</td>
+<td>49</td>
+<td>1</td>
+</tr>
+<tr>
+<td>6</td>
+<td>115</td>
+<td>0</td>
+<td>115</td>
+<td>s</td>
+</tr>
+<tr>
+<td>7</td>
+<td>163</td>
+<td>252</td>
+<td>95</td>
+<td>_</td>
+</tr>
+<tr>
+<td>8</td>
+<td>211</td>
+<td>157</td>
+<td>78</td>
+<td>N</td>
+</tr>
+<tr>
+<td>9</td>
+<td>3</td>
+<td>51</td>
+<td>48</td>
+<td>0</td>
+</tr>
+<tr>
+<td>10</td>
+<td>252</td>
+<td>136</td>
+<td>116</td>
+<td>t</td>
+</tr>
+<tr>
+<td>11</td>
+<td>44</td>
+<td>115</td>
+<td>95</td>
+<td>_</td>
+</tr>
+<tr>
+<td>12</td>
+<td>92</td>
+<td>104</td>
+<td>52</td>
+<td>4</td>
+</tr>
+<tr>
+<td>13</td>
+<td>140</td>
+<td>211</td>
+<td>95</td>
+<td>_</td>
+</tr>
+<tr>
+<td>14</td>
+<td>188</td>
+<td>236</td>
+<td>80</td>
+<td>P</td>
+</tr>
+<tr>
+<td>15</td>
+<td>181</td>
+<td>219</td>
+<td>110</td>
+<td>n</td>
+</tr>
+<tr>
+<td>16</td>
+<td>229</td>
+<td>130</td>
+<td>103</td>
+<td>g</td>
+</tr>
+</tbody></table>
+<p>→ <code>password = W4sm_1s_N0t_4_Png</code></p>
+<h4 id="4-5-还原脚本"><a href="#4-5-还原脚本" class="headerlink" title="4.5 还原脚本"></a><strong>4.5 还原脚本</strong></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># input[i] ^ A == B  =&gt;  input[i] = A ^ B</span><br><span class="line"></span><br><span class="line">user = [</span><br><span class="line">    (53, 71), (101, 0), (149, 248), (197, 154),</span><br><span class="line">    (245, 134), (238, 135), (30, 114), (78, 43),</span><br><span class="line">    (126, 16), (174, 218), (167, 248), (215, 180),</span><br><span class="line">    (7, 102), (55, 84), (103, 15), (96, 5),</span><br><span class="line">]</span><br><span class="line">pwd = [</span><br><span class="line">    (138, 221), (186, 142), (234, 153), (26, 119),</span><br><span class="line">    (74, 21), (67, 114), (115, 0), (163, 252),</span><br><span class="line">    (211, 157), (3, 51), (252, 136), (44, 115),</span><br><span class="line">    (92, 104), (140, 211), (188, 236), (181, 219),</span><br><span class="line">    (229, 130),</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">username = &quot;&quot;.join(chr(a ^ b) for a, b in user)</span><br><span class="line">password = &quot;&quot;.join(chr(a ^ b) for a, b in pwd)</span><br><span class="line">print(username)  # rem_silent_cache</span><br><span class="line">print(password)  # W4sm_1s_N0t_4_Png</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-流程小结"><a href="#5-流程小结" class="headerlink" title="5. 流程小结"></a><strong>5. 流程小结</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 长度：用户名 16、密码 17</span><br><span class="line">2. 逐字节 XOR 校验 username / password</span><br><span class="line">3. check 返回 1 后，POST /api/unlock 换 flag</span><br></pre></td></tr></table></figure>
+
+<p><strong>账号：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">username: rem_silent_cache</span><br><span class="line">password: W4sm_1s_N0t_4_Png</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、其三：货币の战争"><a href="#四、其三：货币の战争" class="headerlink" title="四、其三：货币の战争"></a><strong>四、其三：货币の战争</strong></h2><blockquote>
+<p>我的大菜，也是最近学自动机搞的小东西的实现。</p>
+</blockquote>
+<h3 id="1-出题动机"><a href="#1-出题动机" class="headerlink" title="1. 出题动机"></a><strong>1. 出题动机</strong></h3><p>这题最初不是奔着「出一道逆向」去的，而是那段时间一直在看状态机、后量子密码。理论看到后面真的想吐：交易状态、银行验证、账本锁定、回滚、防双花、密钥交换……纸面上都挺有道理，停在纸面上就很虚。</p>
+<p>于是干脆自己搓一个小的。完整金融系统当然不现实；出题心态是：先实现一套货币交易系统，再顺带把 flag 塞进去。</p>
+<h3 id="2-表面行为"><a href="#2-表面行为" class="headerlink" title="2. 表面行为"></a><strong>2. 表面行为</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">payment_server.exe sample.payment</span><br></pre></td></tr></table></figure>
+
+<p>跑起来服务器说交易已正常清算：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[bank] digital payment server started</span><br><span class="line">[bank] transaction received</span><br><span class="line">[bank] transaction settled</span><br></pre></td></tr></table></figure>
+
+<p>这是故意留的「假正常」：</p>
+<ul>
+<li><code>sample.payment</code> 确实是合法支付文件  </li>
+<li>服务器会解析、验证、清算  </li>
+<li><strong>正常路径没有 flag</strong></li>
+</ul>
+<p>真正要看的不是「这笔交易成没成」，而是「系统里有没有别的交易路径」。</p>
+<h3 id="3-状态机设计"><a href="#3-状态机设计" class="headerlink" title="3. 状态机设计"></a><strong>3. 状态机设计</strong></h3><p>拆了几个状态机：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">TransactionFSM</span><br><span class="line">BankFSM</span><br><span class="line">LedgerFSM</span><br><span class="line">WalletFSM</span><br></pre></td></tr></table></figure>
+
+<p>简单说：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">钱包负责生成交易</span><br><span class="line">交易状态机负责走流程</span><br><span class="line">银行状态机负责审核</span><br><span class="line">账本状态机负责锁钱和清算</span><br></pre></td></tr></table></figure>
+
+<p>放到 reverse 里好玩的点：选手不是只看一个 <code>if</code>，而是要还原一整条流程。</p>
+<h4 id="正常路径"><a href="#正常路径" class="headerlink" title="正常路径"></a><strong>正常路径</strong></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SIGN</span><br><span class="line"> → KYBER_EXCHANGE</span><br><span class="line"> → AES_ENCRYPT</span><br><span class="line"> → SEND</span><br><span class="line"> → VERIFY_SUCCESS</span><br><span class="line"> → SETTLE</span><br><span class="line"> → SETTLE</span><br></pre></td></tr></table></figure>
+
+<p>终点：<code>transaction settled</code>。</p>
+<h4 id="隐藏路径（旧版-recovery）"><a href="#隐藏路径（旧版-recovery）" class="headerlink" title="隐藏路径（旧版 recovery）"></a><strong>隐藏路径（旧版 recovery）</strong></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SIGN</span><br><span class="line"> → KYBER_EXCHANGE</span><br><span class="line"> → AES_ENCRYPT</span><br><span class="line"> → SEND</span><br><span class="line"> → VERIFY_FAIL</span><br><span class="line"> → REFUND</span><br><span class="line"> → LEGACY_RETRY</span><br></pre></td></tr></table></figure>
+
+<p>表面：失败 → 退款 → 结束。<br>继续往下会发现 <code>LEGACY_RETRY</code> 会进隐藏状态。</p>
+<p><strong>核心：flag 不在正常支付里，而在「失败后被旧系统重新接管」的那条路里。</strong></p>
+<h3 id="4-payment-文件结构"><a href="#4-payment-文件结构" class="headerlink" title="4. payment 文件结构"></a><strong>4. payment 文件结构</strong></h3><p>不止改事件编号就能出 flag，文件里还有多层校验：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DPAY | version | amount | kyber_capsule | event_count | events | signature | checksum</span><br></pre></td></tr></table></figure>
+
+
+<table>
+<thead>
+<tr>
+<th><strong>字段</strong></th>
+<th><strong>作用</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DPAY</code></td>
+<td>文件头，提示不是普通文本</td>
+</tr>
+<tr>
+<td><code>amount</code></td>
+<td>金额</td>
+</tr>
+<tr>
+<td><code>events</code></td>
+<td>状态机事件序列</td>
+</tr>
+<tr>
+<td><code>signature</code> &#x2F; <code>checksum</code></td>
+<td>防止随便改事件</td>
+</tr>
+<tr>
+<td><code>kyber_capsule</code></td>
+<td>后量子支付的「小玩意」（伪 Kyber 胶囊校验）</td>
+</tr>
+</tbody></table>
+<p>说明：题里的 Kyber <strong>不是</strong>完整 Kyber768。工程量太大，对 reverse 主线帮助有限，更像伪胶囊校验——它不是 flag，也不是最终解密密钥。</p>
+<p>形象一点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">flag          = 银行服务器里锁起来的秘密回执</span><br><span class="line">pathHash      = 真正开锁的钥匙</span><br><span class="line">Kyber capsule = 门口保安要看的通行证</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>光有通行证不行  </li>
+<li>光知道门在哪里也不行  </li>
+<li>必须让交易走到隐藏 recovery，算出特殊 <code>pathHash</code>  </li>
+<li><code>pathHash</code> <strong>才是解密 receipt 的 key</strong></li>
+</ul>
+<p>正常路径的 <code>pathHash</code> 不对，解不开；隐藏路径对了，才解出加密 receipt。</p>
+<h3 id="5-Flag-在哪"><a href="#5-Flag-在哪" class="headerlink" title="5. Flag 在哪"></a><strong>5. Flag 在哪</strong></h3><ul>
+<li><strong>不在</strong> <code>sample.payment</code> 明文里  </li>
+<li><strong>不在</strong> 程序字符串明文里  </li>
+<li><strong>加密后放在</strong> <code>payment_server.exe</code> 里</li>
+</ul>
+<p>只有构造正确的隐藏交易，让服务器进入 legacy recovery，才会输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HYNUCTF&#123;M0N3YG0D&#125;</span><br></pre></td></tr></table></figure>
+
+<p>喜欢这设计的原因：不是单纯字符串比较，也不是单纯 AES&#x2F;XOR，而是把 <strong>状态路径</strong> 和 <strong>解密 key</strong> 绑在一起——你不是在找一个密码，而是在找一条路。</p>
+<p>想表达的是：</p>
+<blockquote>
+<p>有些系统的秘密不一定藏在某个变量里，而是藏在某条不该再存在的流程里。</p>
+</blockquote>
+<h3 id="6-附件策略"><a href="#6-附件策略" class="headerlink" title="6. 附件策略"></a><strong>6. 附件策略</strong></h3><p>最终只放：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">payment_server.exe</span><br><span class="line">sample.payment</span><br></pre></td></tr></table></figure>
+
+<p><strong>不放：</strong></p>
+<ul>
+<li><code>wallet.exe</code>（作者生成交易用）  </li>
+<li><code>secret.payment</code>（作者验题用的隐藏交易）</li>
+</ul>
+<p>选手拿到的 <code>sample.payment</code> 跑起来只会清算成功。真正要做的是：</p>
+<ol>
+<li>逆向服务器</li>
+<li>分析文件格式</li>
+<li>找到隐藏事件序列</li>
+<li>重新构造 payment</li>
+<li>让服务器走旧版 recovery</li>
+</ol>
+<h3 id="7-碎碎念"><a href="#7-碎碎念" class="headerlink" title="7. 碎碎念"></a><strong>7. 碎碎念</strong></h3><p>这题不算特别难，但比单纯藏字符串或套壳舒服一点：至少是从系统设计角度做 reverse——钱包、交易、银行、账本、胶囊校验、隐藏回执拼起来，有一点「它真的像个东西」的感觉。</p>
+<p>虽然还是挺手搓，但能把学得想吐的理论变成能跑的题，已经挺值了。</p>
+<hr>
+<h2 id="附录：三题速查"><a href="#附录：三题速查" class="headerlink" title="附录：三题速查"></a><strong>附录：三题速查</strong></h2><table>
+<thead>
+<tr>
+<th><strong>题号</strong></th>
+<th><strong>题名</strong></th>
+<th><strong>关键点</strong></th>
+<th><strong>备注</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>其一</td>
+<td>医院导诊系统故障啦</td>
+<td>菜单 3 → <code>MNT-2419</code> → 选项 7 → <code>xor 0x91</code> + 3 秒</td>
+<td>适合脚本自动化</td>
+</tr>
+<tr>
+<td>其二</td>
+<td>打开 ZGH 被网络封闭的内心</td>
+<td>PNG 尾部加密 WASM + HTML seed 解密 + <code>check</code> 逐字节 XOR</td>
+<td><code>rem_silent_cache</code> &#x2F; <code>W4sm_1s_N0t_4_Png</code></td>
+</tr>
+<tr>
+<td>其三</td>
+<td>货币の战争</td>
+<td>状态机隐藏 recovery 路径 → <code>pathHash</code> 解密 receipt</td>
+<td>Flag：<code>HYNUCTF{M0N3YG0D}</code></td>
+</tr>
+</tbody></table>
+<hr>
+<p>&nbsp;</p>
+</div>
+      
+
+      
+    </div>
+
+    
+      <div class="article-tags" aria-label="文章标签">
+        
+          <span class="tag">万物皆可逆</span>
+        
+      </div>
+    
+  </div>
+
+  
+    <nav class="article-navigation" aria-label="相邻文章">
+      
+      <a href="/posts/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B%E5%85%A5%E9%97%A8%E2%98%9E%E5%8C%97-/">下一篇：逆向工程入门☞北</a>
+    </nav>
+  
+
+  
+  
+    <section class="comments-card" aria-labelledby="comments-title">
+      <div class="comments-heading">
+        <h2 id="comments-title">留言</h2>
+        <p>欢迎留下想法。留言将由 GitHub Discussions 保存。</p>
+      </div>
+      <div class="giscus"></div>
+      <script src="https://giscus.app/client.js"
+              data-repo="R1C3SH0W3R/r1c3sh0w3r.github.io"
+              data-repo-id="R_kgDOToLU1A"
+              data-category="留言"
+              data-category-id="DIC_kwDOToLU1M4DCT3K"
+              data-mapping="pathname"
+              data-strict="1"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="top"
+              data-theme="preferred_color_scheme"
+              data-lang="zh-CN"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
+  
+</article>
+
+  </main>
+
+  <footer>
+    <div class="container">© 2026 绯野的博客 · Powered by Hexo & GitHub Pages</div>
+  </footer>
+
+  <div id="rembox">
+    <div id="landlord">
+      <div class="message" style="opacity:0"></div>
+      <canvas id="live2d" width="500" height="560" class="live2d"></canvas>
+      <input name="live_talk" id="live_talk" value="1" type="hidden">
+    </div>
+    <div id="open_live2d"></div>
+  </div>
+
+  <script src="/live2d/js/jquery.min.js"></script>
+  <script src="/live2d/js/live2d.js"></script>
+  <script src="/live2d/js/message.js"></script>
+  <script src="/assets/vendor/tsparticles/tsparticles.engine.min.js"></script>
+  <script src="/assets/vendor/tsparticles/tsparticles.bundle.min.js"></script>
+  <script src="/js/effects.js"></script>
+</body>
+</html>

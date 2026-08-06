@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="整理一些曾经维护 Ubuntu 与 Nginx 时用到的常见检查命令，留作日后查阅。">
+  <meta name="theme-color" content="#fff8fb">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <title>Ubuntu 服务器常用命令记录 · 绯野のblog</title>
+  <link rel="stylesheet" href="/live2d/css/live2d.css">
+  <link rel="stylesheet" href="/css/style.css">
+<meta name="generator" content="Hexo 8.1.2"></head>
+<body class="layout-post">
+  <video
+    id="anime-bg"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="/assets/video/yukino-bg-preview.jpg"
+    aria-hidden="true"
+  >
+    <source src="/assets/video/yukino-bg.mp4" type="video/mp4" media="(min-width: 821px)">
+  </video>
+
+  <div id="anime-bg-shade" aria-hidden="true"></div>
+  <div id="tsparticles" aria-hidden="true"></div>
+
+  <header>
+    <div class="container nav">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>绯野のblog</span>
+      </a>
+      <nav class="nav-links" aria-label="主导航">
+        <a href="/#posts">文章</a>
+        <a href="/#projects">项目</a>
+        <a href="/#about">关于</a>
+        <a href="/#links">链接</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="top">
+    <article class="article-page">
+  <header class="article-hero">
+    <a class="article-back" href="/#posts">返回文章列表</a>
+    <h1>Ubuntu 服务器常用命令记录</h1>
+    <div class="article-meta">
+      <time datetime="2026-07-30T02:30:00.000Z">2026 年 7 月 30 日</time>
+      
+        
+          <a class="article-category" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+        
+      
+    </div>
+  </header>
+
+  <div class="article-card">
+    
+
+    
+
+    
+    <div class="article-content">
+      
+        <div class="article-block article-block-text article-legacy-content"><p>服务器维护中，先观察状态，再做修改，通常会更加稳妥。</p>
+<span id="more"></span>
+
+<h2 id="查看服务状态"><a href="#查看服务状态" class="headerlink" title="查看服务状态"></a>查看服务状态</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl status nginx --no-pager</span><br><span class="line">systemctl status ssh --no-pager</span><br></pre></td></tr></table></figure>
+
+<h2 id="检查-Nginx-配置"><a href="#检查-Nginx-配置" class="headerlink" title="检查 Nginx 配置"></a>检查 Nginx 配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看磁盘与内存"><a href="#查看磁盘与内存" class="headerlink" title="查看磁盘与内存"></a>查看磁盘与内存</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">df</span> -h</span><br><span class="line">free -h</span><br></pre></td></tr></table></figure>
+
+<p>这些命令不会替代备份，但能帮助我们先弄清楚问题所在。</p>
+</div>
+      
+
+      
+    </div>
+
+    
+      <div class="article-tags" aria-label="文章标签">
+        
+          <span class="tag">Ubuntu</span>
+        
+          <span class="tag">Nginx</span>
+        
+      </div>
+    
+  </div>
+
+  
+    <nav class="article-navigation" aria-label="相邻文章">
+      <a href="/posts/%E6%88%91%E7%9A%84%E5%8D%9A%E5%AE%A2%E6%AD%A3%E5%BC%8F%E4%B8%8A%E7%BA%BF%E4%BA%86/">上一篇：我终于开了一个自己的大博客了</a>
+      <a href="/posts/%E5%8D%9A%E5%AE%A2%E8%BF%81%E7%A7%BB%E5%88%B0GitHub-Pages/">下一篇：博客迁移到 GitHub Pages</a>
+    </nav>
+  
+
+  
+  
+    <section class="comments-card" aria-labelledby="comments-title">
+      <div class="comments-heading">
+        <h2 id="comments-title">留言</h2>
+        <p>欢迎留下想法。留言将由 GitHub Discussions 保存。</p>
+      </div>
+      <div class="giscus"></div>
+      <script src="https://giscus.app/client.js"
+              data-repo="R1C3SH0W3R/r1c3sh0w3r.github.io"
+              data-repo-id="R_kgDOToLU1A"
+              data-category="留言"
+              data-category-id="DIC_kwDOToLU1M4DCT3K"
+              data-mapping="pathname"
+              data-strict="1"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="top"
+              data-theme="preferred_color_scheme"
+              data-lang="zh-CN"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
+  
+</article>
+
+  </main>
+
+  <footer>
+    <div class="container">© 2026 绯野的博客 · Powered by Hexo & GitHub Pages</div>
+  </footer>
+
+  <div id="rembox">
+    <div id="landlord">
+      <div class="message" style="opacity:0"></div>
+      <canvas id="live2d" width="500" height="560" class="live2d"></canvas>
+      <input name="live_talk" id="live_talk" value="1" type="hidden">
+    </div>
+    <div id="open_live2d"></div>
+  </div>
+
+  <script src="/live2d/js/jquery.min.js"></script>
+  <script src="/live2d/js/live2d.js"></script>
+  <script src="/live2d/js/message.js"></script>
+  <script src="/assets/vendor/tsparticles/tsparticles.engine.min.js"></script>
+  <script src="/assets/vendor/tsparticles/tsparticles.bundle.min.js"></script>
+  <script src="/js/effects.js"></script>
+</body>
+</html>
