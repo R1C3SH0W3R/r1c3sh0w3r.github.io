@@ -553,16 +553,118 @@ section {
 }
 
 .pagination {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 18px 23px;
   border-top: 1px solid var(--line);
+  padding: 18px 20px 20px;
+  display: grid;
+  gap: 14px;
+  background: rgba(255, 249, 252, .48);
 }
 
-.pagination a {
-  color: var(--pink);
+.pagination-links,
+.pagination-numbers,
+.pagination-jump {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-links {
+  min-height: 38px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pagination-numbers {
+  gap: 6px;
+}
+
+.pagination-edge,
+.pagination-step,
+.pagination-number {
+  min-height: 36px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(223, 111, 156, .24);
+  border-radius: 6px;
+  color: #a6426c;
+  background: rgba(255, 255, 255, .74);
+  font-size: 14px;
   font-weight: 700;
+  line-height: 1;
+  transition: border-color .2s ease, color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.pagination-edge,
+.pagination-step {
+  padding: 6px 11px;
+}
+
+.pagination-number {
+  width: 36px;
+}
+
+.pagination a:hover {
+  border-color: var(--pink);
+  color: #fff;
+  background: var(--pink);
+  transform: translateY(-1px);
+}
+
+.pagination .is-current {
+  border-color: var(--pink);
+  color: #fff;
+  background: var(--pink);
+  box-shadow: 0 5px 14px rgba(223, 111, 156, .24);
+}
+
+.pagination .is-disabled {
+  border-color: rgba(130, 111, 122, .12);
+  color: #b6a8b0;
+  background: rgba(255, 255, 255, .36);
+  cursor: not-allowed;
+}
+
+.pagination-jump {
+  min-height: 38px;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.pagination-jump input {
+  width: 64px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: rgba(255, 255, 255, .82);
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+}
+
+.pagination-jump input:focus {
+  border-color: var(--pink);
+  outline: 3px solid rgba(223, 111, 156, .16);
+}
+
+.pagination-jump button {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--pink);
+  border-radius: 6px;
+  color: #fff;
+  background: var(--pink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.pagination-jump button:hover {
+  border-color: #b74d78;
+  background: #b74d78;
 }
 
 .article-page {
@@ -828,6 +930,58 @@ body > footer {
   backdrop-filter: blur(8px);
 }
 
+.visitor-counter {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 19;
+  width: 164px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 12px;
+  display: grid;
+  grid-template-columns: 8px 1fr auto auto;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(238, 183, 205, .82);
+  border-radius: 8px;
+  color: var(--text);
+  background: rgba(255, 248, 251, .9);
+  box-shadow: 0 10px 28px rgba(62, 38, 54, .16);
+  backdrop-filter: blur(12px);
+}
+
+.visitor-counter::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 0 4px rgba(78, 148, 165, .14);
+}
+
+.visitor-counter-label,
+.visitor-counter-unit {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.visitor-counter strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #b64f79;
+  font-size: 18px;
+  line-height: 1;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visitor-counter.is-unavailable strong {
+  color: var(--muted);
+  font-size: 12px;
+}
+
 #rembox {
   position: fixed;
   left: 0;
@@ -959,6 +1113,36 @@ body > footer {
   #rembox {
     transform: scale(.72);
     transform-origin: left bottom;
+  }
+}
+
+@media (max-width: 620px) {
+  .pagination {
+    padding: 16px 12px 18px;
+  }
+
+  .pagination-links {
+    gap: 6px;
+  }
+
+  .pagination-edge,
+  .pagination-step {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .pagination-number {
+    width: 34px;
+  }
+
+  .visitor-counter {
+    right: 10px;
+    bottom: 10px;
+    width: 132px;
+    min-width: 0;
+    min-height: 44px;
+    padding: 7px 10px;
+    gap: 5px;
   }
 }
 

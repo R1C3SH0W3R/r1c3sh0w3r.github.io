@@ -191,6 +191,65 @@ window.addEventListener("load", async function () {
 })();
 
 (function () {
+  const paginations = document.querySelectorAll("[data-pagination]");
+
+  paginations.forEach(function (pagination) {
+    const form = pagination.querySelector("[data-pagination-jump]");
+    const input = form && form.querySelector('input[name="page"]');
+    const totalPages = Number.parseInt(pagination.dataset.totalPages || "1", 10);
+
+    if (!form || !input) {
+      return;
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      if (!input.checkValidity()) {
+        input.reportValidity();
+        return;
+      }
+
+      const requestedPage = Number.parseInt(input.value, 10);
+      if (!Number.isInteger(requestedPage) || requestedPage < 1 || requestedPage > totalPages) {
+        input.setCustomValidity("请输入有效页码");
+        input.reportValidity();
+        return;
+      }
+
+      const root = pagination.dataset.paginationRoot || "/";
+      const directory = (pagination.dataset.paginationDir || "page").replace(/^\/+|\/+$/g, "");
+      const normalizedRoot = root.endsWith("/") ? root : root + "/";
+      const target = requestedPage === 1
+        ? normalizedRoot
+        : normalizedRoot + directory + "/" + requestedPage + "/";
+
+      window.location.assign(target + "#posts");
+    });
+
+    input.addEventListener("input", function () {
+      input.setCustomValidity("");
+    });
+  });
+})();
+
+(function () {
+  const visitorCounter = document.querySelector("[data-visitor-counter]");
+  const visitorValue = visitorCounter && visitorCounter.querySelector("[data-visitor-value]");
+
+  if (!visitorCounter || !visitorValue) {
+    return;
+  }
+
+  window.setTimeout(function () {
+    if (visitorValue.textContent.trim() === "加载中") {
+      visitorValue.textContent = "暂不可用";
+      visitorCounter.classList.add("is-unavailable");
+    }
+  }, 12000);
+})();
+
+(function () {
   const symbols = ["♡", "✦", "❀", "☆"];
   const colors = ["#ef78a8", "#66bfd4", "#f2bd45", "#a28de2"];
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");

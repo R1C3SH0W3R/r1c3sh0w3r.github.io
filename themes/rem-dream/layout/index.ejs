@@ -47,10 +47,73 @@
         </article>
       <% } %>
 
-      <% if (page.prev_link || page.next_link) { %>
-        <nav class="pagination" aria-label="文章翻页">
-          <% if (page.prev_link) { %><a href="<%- url_for(page.prev_link) %>">上一页</a><% } %>
-          <% if (page.next_link) { %><a href="<%- url_for(page.next_link) %>">下一页</a><% } %>
+      <% const currentPage = page.current || 1; %>
+      <% const totalPages = page.total || 1; %>
+      <% if (totalPages > 1) { %>
+        <%
+          const pageHref = function(pageNumber) {
+            const target = pageNumber === 1 ? url_for('/') : url_for(config.pagination_dir + '/' + pageNumber + '/');
+            return target + '#posts';
+          };
+          let pageStart = Math.max(1, currentPage - 2);
+          let pageEnd = Math.min(totalPages, pageStart + 4);
+          pageStart = Math.max(1, pageEnd - 4);
+          const visiblePages = [];
+          for (let pageNumber = pageStart; pageNumber <= pageEnd; pageNumber += 1) {
+            visiblePages.push(pageNumber);
+          }
+        %>
+        <nav
+          class="pagination"
+          aria-label="文章分页"
+          data-pagination
+          data-pagination-root="<%- url_for('/') %>"
+          data-pagination-dir="<%= config.pagination_dir %>"
+          data-total-pages="<%= totalPages %>"
+        >
+          <div class="pagination-links">
+            <% if (currentPage > 1) { %>
+              <a class="pagination-edge" href="<%- pageHref(1) %>" title="返回第一页">首页</a>
+              <a class="pagination-step" href="<%- pageHref(currentPage - 1) %>" rel="prev">上一页</a>
+            <% } else { %>
+              <span class="pagination-edge is-disabled" aria-disabled="true">首页</span>
+              <span class="pagination-step is-disabled" aria-disabled="true">上一页</span>
+            <% } %>
+
+            <span class="pagination-numbers" aria-label="页码">
+              <% visiblePages.forEach(function(pageNumber) { %>
+                <% if (pageNumber === currentPage) { %>
+                  <span class="pagination-number is-current" aria-current="page"><%= pageNumber %></span>
+                <% } else { %>
+                  <a class="pagination-number" href="<%- pageHref(pageNumber) %>" aria-label="第 <%= pageNumber %> 页"><%= pageNumber %></a>
+                <% } %>
+              <% }); %>
+            </span>
+
+            <% if (currentPage < totalPages) { %>
+              <a class="pagination-step" href="<%- pageHref(currentPage + 1) %>" rel="next">下一页</a>
+              <a class="pagination-edge" href="<%- pageHref(totalPages) %>" title="前往最后一页">尾页</a>
+            <% } else { %>
+              <span class="pagination-step is-disabled" aria-disabled="true">下一页</span>
+              <span class="pagination-edge is-disabled" aria-disabled="true">尾页</span>
+            <% } %>
+          </div>
+
+          <form class="pagination-jump" data-pagination-jump>
+            <label for="page-jump-<%= currentPage %>">跳至</label>
+            <input
+              id="page-jump-<%= currentPage %>"
+              name="page"
+              type="number"
+              min="1"
+              max="<%= totalPages %>"
+              value="<%= currentPage %>"
+              inputmode="numeric"
+              aria-label="输入页码，共 <%= totalPages %> 页"
+            >
+            <span aria-hidden="true">/ <%= totalPages %></span>
+            <button type="submit">前往</button>
+          </form>
         </nav>
       <% } %>
     </div>

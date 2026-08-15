@@ -50,6 +50,12 @@
     <div class="container">© <%= date(Date.now(), 'YYYY') %> <%= theme.footer_text %> · Powered by Hexo & GitHub Pages</div>
   </footer>
 
+  <aside class="visitor-counter" data-visitor-counter aria-label="本站累计访客">
+    <span class="visitor-counter-label">累计访客</span>
+    <strong id="busuanzi_site_uv" data-visitor-value aria-live="polite">加载中</strong>
+    <span class="visitor-counter-unit">人</span>
+  </aside>
+
   <div id="rembox">
     <div id="landlord">
       <div class="message" style="opacity:0"></div>
@@ -64,6 +70,7 @@
   <script src="<%- url_for('/live2d/js/message.js') %>"></script>
   <script src="<%- url_for('/assets/vendor/tsparticles/tsparticles.engine.min.js') %>"></script>
   <script src="<%- url_for('/assets/vendor/tsparticles/tsparticles.bundle.min.js') %>"></script>
+  <script src="https://cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js" defer></script>
   <script src="<%- url_for('/js/effects.js') %>"></script>
 </body>
 </html>
