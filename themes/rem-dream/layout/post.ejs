@@ -12,6 +12,28 @@
     </div>
   </header>
 
+  <aside class="article-toc" data-article-toc aria-label="文章目录" hidden>
+    <button class="article-toc-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="article-toc-panel"
+            aria-label="打开文章目录">
+      <span class="article-toc-toggle-icon" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+      <span>目录</span>
+    </button>
+    <nav class="article-toc-panel" id="article-toc-panel" aria-label="本文目录">
+      <div class="article-toc-header">
+        <strong>本文目录</strong>
+        <span data-article-toc-count></span>
+      </div>
+      <ol class="article-toc-list" data-article-toc-list></ol>
+    </nav>
+  </aside>
+
   <div class="article-card">
     <% if (page.cover) { %>
       <figure class="article-cover">

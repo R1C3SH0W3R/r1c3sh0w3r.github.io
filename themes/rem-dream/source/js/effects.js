@@ -250,6 +250,189 @@ window.addEventListener("load", async function () {
 })();
 
 (function () {
+  const toc = document.querySelector("[data-article-toc]");
+  const articleContent = document.querySelector(".article-content");
+
+  if (!toc || !articleContent) {
+    return;
+  }
+
+  const headings = Array.from(articleContent.querySelectorAll("h1, h2, h3, h4, h5, h6"));
+  const list = toc.querySelector("[data-article-toc-list]");
+  const count = toc.querySelector("[data-article-toc-count]");
+  const toggle = toc.querySelector(".article-toc-toggle");
+  const panel = toc.querySelector(".article-toc-panel");
+
+  if (!headings.length || !list || !count || !toggle || !panel) {
+    return;
+  }
+
+  const usedIds = new Set();
+  const links = [];
+  const minimumLevel = Math.min.apply(null, headings.map(function (heading) {
+    return Number.parseInt(heading.tagName.slice(1), 10);
+  }));
+  const compactLayout = window.matchMedia("(max-width: 1399px)");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let isOpen = false;
+  let activeIndex = -1;
+  let updateQueued = false;
+
+  function uniqueHeadingId(heading, index) {
+    const baseId = heading.id || "article-section-" + (index + 1);
+    let candidate = baseId;
+    let suffix = 2;
+    let existing = document.getElementById(candidate);
+
+    while (usedIds.has(candidate) || (existing && existing !== heading)) {
+      candidate = baseId + "-" + suffix;
+      suffix += 1;
+      existing = document.getElementById(candidate);
+    }
+
+    usedIds.add(candidate);
+    return candidate;
+  }
+
+  function setOpen(nextOpen) {
+    isOpen = compactLayout.matches && nextOpen;
+    toc.classList.toggle("is-open", isOpen);
+    toggle.setAttribute("aria-expanded", String(compactLayout.matches ? isOpen : true));
+    toggle.setAttribute("aria-label", isOpen ? "关闭文章目录" : "打开文章目录");
+    panel.setAttribute("aria-hidden", String(compactLayout.matches ? !isOpen : false));
+  }
+
+  function setActive(index) {
+    if (index === activeIndex || index < 0 || index >= links.length) {
+      return;
+    }
+
+    links.forEach(function (link, linkIndex) {
+      const selected = linkIndex === index;
+      link.classList.toggle("is-active", selected);
+      if (selected) {
+        link.setAttribute("aria-current", "location");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+
+    activeIndex = index;
+    const activeLink = links[index];
+    const linkTop = activeLink.offsetTop;
+    const linkBottom = linkTop + activeLink.offsetHeight;
+
+    if (linkTop < list.scrollTop) {
+      list.scrollTo({
+        top: Math.max(0, linkTop - 10),
+        behavior: reduceMotion.matches ? "auto" : "smooth"
+      });
+    } else if (linkBottom > list.scrollTop + list.clientHeight) {
+      list.scrollTo({
+        top: linkBottom - list.clientHeight + 10,
+        behavior: reduceMotion.matches ? "auto" : "smooth"
+      });
+    }
+  }
+
+  function updateActiveHeading() {
+    updateQueued = false;
+    const readingLine = Math.min(180, window.innerHeight * 0.28);
+    let nextIndex = 0;
+
+    headings.forEach(function (heading, index) {
+      if (heading.getBoundingClientRect().top <= readingLine) {
+        nextIndex = index;
+      }
+    });
+
+    if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) {
+      nextIndex = headings.length - 1;
+    }
+
+    setActive(nextIndex);
+  }
+
+  function queueActiveHeadingUpdate() {
+    if (!updateQueued) {
+      updateQueued = true;
+      window.requestAnimationFrame(updateActiveHeading);
+    }
+  }
+
+  headings.forEach(function (heading, index) {
+    const level = Number.parseInt(heading.tagName.slice(1), 10);
+    const headingId = uniqueHeadingId(heading, index);
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+
+    heading.id = headingId;
+    heading.setAttribute("tabindex", "-1");
+    item.className = "article-toc-item article-toc-level-" + level;
+    const indentation = Math.min(4, Math.max(0, level - minimumLevel)) * 11;
+    item.style.setProperty("--toc-indent", indentation + "px");
+    link.className = "article-toc-link";
+    link.href = "#" + encodeURIComponent(headingId);
+    link.textContent = heading.textContent.trim() || "未命名章节";
+    link.title = link.textContent;
+
+    link.addEventListener("click", function (event) {
+      event.preventDefault();
+      const targetUrl = new URL(window.location.href);
+      targetUrl.hash = headingId;
+      window.history.pushState(null, "", targetUrl);
+      heading.scrollIntoView({
+        behavior: reduceMotion.matches ? "auto" : "smooth",
+        block: "start"
+      });
+      heading.focus({ preventScroll: true });
+      setActive(index);
+      setOpen(false);
+    });
+
+    item.appendChild(link);
+    list.appendChild(item);
+    links.push(link);
+  });
+
+  count.textContent = headings.length + " 节";
+  toc.hidden = false;
+  setOpen(false);
+  updateActiveHeading();
+
+  toggle.addEventListener("click", function () {
+    setOpen(!isOpen);
+  });
+
+  document.addEventListener("click", function (event) {
+    if (compactLayout.matches && isOpen && !toc.contains(event.target)) {
+      setOpen(false);
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && isOpen) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+
+  function syncLayout() {
+    setOpen(false);
+  }
+
+  if (typeof compactLayout.addEventListener === "function") {
+    compactLayout.addEventListener("change", syncLayout);
+  } else {
+    compactLayout.addListener(syncLayout);
+  }
+
+  window.addEventListener("scroll", queueActiveHeadingUpdate, { passive: true });
+  window.addEventListener("resize", queueActiveHeadingUpdate, { passive: true });
+  window.addEventListener("hashchange", queueActiveHeadingUpdate);
+})();
+
+(function () {
   const symbols = ["♡", "✦", "❀", "☆"];
   const colors = ["#ef78a8", "#66bfd4", "#f2bd45", "#a28de2"];
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
