@@ -55,7 +55,7 @@ index_generator:
   per_page: 6
   order_by: -date
 
-default_category: uncategorized
+default_category: 未分类
 category_map: {}
 tag_map: {}
 date_format: YYYY-MM-DD

@@ -1,3 +1,14 @@
+---
+title: MalDoc
+date: 2026-08-21 20:46:55
+description: 分析恶意 Word 文档中的宏、混淆 Base64 字符串、下载域名与 WMI 启动过程。
+categories:
+  - 技术
+tags:
+  - Malware
+  - 恶意文档
+---
+
 # MalDoc
 
 ​	这里我进行分析的是一个sample.bin文件，题目中甩给我九个问题，分别是：
@@ -31,7 +42,7 @@ sample.bin: Composite Document File V2 Document, Little Endian, Os: Windows, Ver
 
 ​	该命令显示该文件`Composite Document File V2`为 CFB 格式文件。输出结果提供了重要的元数据，包括创建该文件的操作系统、上次保存的日期和时间以及应用程序版本。这些信息有助于判断文档的来源以及是否已被修改。所以下一步就用oledump.py对于这个文件进行一个分析：
 
-![image-20260821114558605](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821114558605.png)
+![image-20260821114558605](/uploads/images/image-20260802233556030.png)
 
 ​	`M`请注意，和`m`指标之间的主要区别`oledump`在于它们所代表的宏观内容类型：
 
@@ -578,7 +589,7 @@ VBA Stomping detection is experimental: please report any false positive/negativ
 
 ​	我们要主要到这里：
 
-![image-20260821153022664](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821153022664.png)
+![image-20260821153022664](/uploads/images/image-20260802233556036.png)
 
 ​	这里有一个表格样式的东西，该**`Document_open`**事件（也就是Q2的回答）是一个 VBA 触发器，会在文档打开时自动执行。攻击者通常会利用此功能，在受害者打开文档后立即启动恶意代码。通过利用此事件，恶意宏无需用户执行任何手动操作（例如单击按钮），使其成为一种有效的初始攻击途径。（这个可以，我喜欢，可以试试搞进去我的题目去）
 
@@ -590,31 +601,31 @@ VBA Stomping detection is experimental: please report any false positive/negativ
 
 ​	然后就：
 
-![image-20260821153837460](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821153837460.png)
+![image-20260821153837460](/uploads/images/image-20260802233556040.png)
 
 ​	然后使用该哈希值查询威胁情报平台（例如`VirusTotal`），以收集有关文件信誉和潜在威胁的信息。
 
-​	![image-20260821154150555](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821154150555.png)
+​	![image-20260821154150555](/uploads/images/image-20260802233556044.png)
 
 ​	（还蛮好用）
 
 ​	可以通过这个平台查完哈希之后知道这不是什么好东西反正：
 
-![image-20260821154349735](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821154349735.png)
+![image-20260821154349735](/uploads/images/image-20260802233556050.png)
 
 ​	这里有一个popular threat label后面展示了Q3想问的那种恶意软件家族，这个家族就是emotet。
 
 ​	Q4这里问哪个是负责储存base64的流，这里我们还是要找上面那个我们那个很长很长的分析结果出来：
 
-​	![image-20260821161924034](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821161924034.png)
+​	![image-20260821161924034](/uploads/images/image-20260802233556052.png)
 
 ​	这个东西是不是很大啊，203G，内存很大这表明它可能包含混淆或编码的内容。那我们就针对这个进行细找：
 
-![image-20260821162552316](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821162552316.png)
+![image-20260821162552316](/uploads/images/image-20260802233556056.png)
 
 ​	这里的特殊数据流是很长一串的类base64编码数据。这种编码格式是混淆的有力标志，攻击者经常使用混淆来隐藏其有效载荷或命令。Base64 字符串通常隐藏恶意脚本、URL 或其他敏感指令，必须对其进行解码才能了解恶意软件的意图。
 
-![image-20260821162142301](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821162142301.png)
+![image-20260821162142301](/uploads/images/image-20260802233556060.png)
 
 ​	识别出该数据流后，下一步是确定与该数据流关联的数据流编号。`oledump`该数据流的编号为`34`：
 
@@ -642,7 +653,7 @@ VBA Stomping detection is experimental: please report any false positive/negativ
 
 ​	前面我们也提取过了一次txt文件，我们直接在那个txt找就行：
 
-![image-20260821164513392](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821164513392.png)
+![image-20260821164513392](/uploads/images/image-20260802233556064.png)
 
 ​	这个.frm文件呢，通常以`.frm`文件的形式存储在 VBA 项目中。这些`.frm`文件定义了用户窗体的布局和功能，包括与其关联的任何属性或事件处理程序。
 
@@ -652,7 +663,7 @@ VBA Stomping detection is experimental: please report any false positive/negativ
 
 ​	相信胆大心细的同志们在当时把这个bin文件分析完之后看见那个好长的base64吧，但是，我们细看的话，其实重复着些什么：
 
-![image-20260821164748262](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821164748262.png)
+![image-20260821164748262](/uploads/images/image-20260802233556068.png)
 
 ​	这表明了这里存在混淆的操作，中间反复出现的是：`2342772g3&*gs7712ffvs626fq`，但是你细看的话你能看见一个玩意，就是这里每次重复的时候中间总是穿插一些个什么。。。我知道这个很难理解，那我直接把这些替换成逗号应该都能看得懂了：
 
@@ -762,7 +773,7 @@ powershell.exe
 ```
 
 ​	是的，这剩下的base64就是这个encodedcommand，那我们不妨看看这些个玩意decode之后长什么样子：
-![image-20260821172751231](C:\Users\26388\AppData\Roaming\Typora\typora-user-images\image-20260821172751231.png)
+![image-20260821172751231](/uploads/images/image-20260802233556070.png)
 
 ​	丑娃娃，我们用脚本处理一下：
 

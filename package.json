@@ -5,9 +5,11 @@
   "description": "昴君的 Hexo 动漫风个人博客",
   "scripts": {
     "clean": "hexo clean",
-    "build": "hexo generate",
-    "server": "hexo server",
-    "new": "hexo new"
+    "prepare:posts": "node scripts/prepare-posts.js",
+    "build": "npm run prepare:posts && hexo generate",
+    "server": "npm run prepare:posts && hexo server",
+    "new": "hexo new",
+    "test": "node --test test/prepare-posts.test.js"
   },
   "dependencies": {
     "hexo": "^8.1.2",
