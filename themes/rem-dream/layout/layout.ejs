@@ -153,7 +153,7 @@
       </div>
     </div>
     <button class="music-toggle" type="button" data-music-toggle aria-label="打开播放器" aria-expanded="false">♪</button>
-    <audio id="gal-audio" preload="none"></audio>
+    <audio id="gal-audio" preload="auto"></audio>
     <script type="application/json" id="music-tracks">
       [
         {"title":"南山南","src":<%- JSON.stringify(url_for('/assets/music/南山南.mp3')) %>},
@@ -185,7 +185,7 @@
   <script src="<%- url_for('/assets/vendor/tsparticles/tsparticles.engine.min.js') %>"></script>
   <script src="<%- url_for('/assets/vendor/tsparticles/tsparticles.bundle.min.js') %>"></script>
   <script src="https://cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js" defer></script>
-  <script src="<%- url_for('/js/effects.js') %>"></script>
-  <script src="<%- url_for('/js/galgame.js') %>"></script>
+  <script src="<%- url_for('/js/effects.js') %>?v=20261002b"></script>
+  <script src="<%- url_for('/js/galgame.js') %>?v=20261002b"></script>
 </body>
 </html>

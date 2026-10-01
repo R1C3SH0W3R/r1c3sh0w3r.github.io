@@ -100,10 +100,14 @@ window.addEventListener("load", async function () {
   }
 });
 
-(function () {
+function bindCalendars() {
   const calendars = document.querySelectorAll("[data-calendar]");
 
   calendars.forEach(function (calendar) {
+    if (calendar.dataset.hydrated === "1") {
+      return;
+    }
+    calendar.dataset.hydrated = "1";
     const title = calendar.querySelector("[data-calendar-title]");
     const days = calendar.querySelector("[data-calendar-days]");
     const currentDateLabel = calendar.querySelector("[data-calendar-date]");
@@ -178,7 +182,9 @@ window.addEventListener("load", async function () {
     }).format(today);
     renderCalendar();
   });
-})();
+}
+
+bindCalendars();
 
 (function () {
   const paginations = document.querySelectorAll("[data-pagination]");
@@ -239,13 +245,14 @@ window.addEventListener("load", async function () {
   }, 12000);
 })();
 
-(function () {
+function bindArticleToc() {
   const toc = document.querySelector("[data-article-toc]");
   const articleContent = document.querySelector(".article-content");
 
-  if (!toc || !articleContent) {
+  if (!toc || !articleContent || toc.dataset.hydrated === "1") {
     return;
   }
+  toc.dataset.hydrated = "1";
 
   const headings = Array.from(articleContent.querySelectorAll("h1, h2, h3, h4, h5, h6"));
   const list = toc.querySelector("[data-article-toc-list]");
@@ -420,7 +427,14 @@ window.addEventListener("load", async function () {
   window.addEventListener("scroll", queueActiveHeadingUpdate, { passive: true });
   window.addEventListener("resize", queueActiveHeadingUpdate, { passive: true });
   window.addEventListener("hashchange", queueActiveHeadingUpdate);
-})();
+}
+
+bindArticleToc();
+
+window.__galHydratePage = function () {
+  bindCalendars();
+  bindArticleToc();
+};
 
 (function () {
   const symbols = ["♡", "✦", "❀", "☆"];

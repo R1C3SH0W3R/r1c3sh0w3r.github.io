@@ -91,13 +91,76 @@
     playWipe(apply);
   }
 
+  function mountGiscus(root) {
+    if (!root) return;
+    root.querySelectorAll("script").forEach(function (script) {
+      const src = script.getAttribute("src") || "";
+      if (src.indexOf("giscus") === -1) {
+        return;
+      }
+      const next = document.createElement("script");
+      Array.from(script.attributes).forEach(function (attr) {
+        next.setAttribute(attr.name, attr.value);
+      });
+      script.replaceWith(next);
+    });
+  }
+
+  function swapPage(href, push) {
+    return fetch(href, { credentials: "same-origin" }).then(function (res) {
+      if (!res.ok) {
+        throw new Error("fetch failed");
+      }
+      return res.text();
+    }).then(function (html) {
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const newMain = doc.querySelector("#top") || doc.querySelector("main");
+      const oldMain = document.querySelector("#top") || document.querySelector("main");
+      if (!newMain || !oldMain) {
+        throw new Error("no main");
+      }
+      oldMain.innerHTML = newMain.innerHTML;
+      const keepReady = body.classList.contains("is-ready");
+      body.className = doc.body.className;
+      if (keepReady) {
+        body.classList.add("is-ready");
+      }
+      body.classList.remove("is-switching", "is-booting");
+      document.title = doc.title;
+
+      if (body.classList.contains("layout-index")) {
+        sessionStorage.setItem("gal-entered", "1");
+        showScreen("title", true);
+      } else {
+        body.dataset.view = "inner";
+      }
+
+      if (push !== false) {
+        history.pushState({ url: href }, doc.title, href);
+      }
+      if (typeof window.__galHydratePage === "function") {
+        window.__galHydratePage();
+      }
+      mountGiscus(oldMain);
+      applyConfig();
+      playFxVideo();
+      if (typeof window.__galKeepMusic === "function") {
+        window.__galKeepMusic();
+      }
+    }).catch(function () {
+      window.location.assign(href);
+    });
+  }
+
   function navigate(href) {
     if (!href) return;
-    if (typeof window.__galSaveMusic === "function") {
-      window.__galSaveMusic();
+    const dest = new URL(href, window.location.href);
+    if (dest.origin !== window.location.origin) {
+      window.location.assign(dest.href);
+      return;
     }
     playWipe(function () {
-      window.location.assign(href);
+      swapPage(dest.href, true);
     });
   }
 
@@ -172,14 +235,20 @@
       return;
     }
 
-    const wipeLink = event.target.closest("[data-wipe]");
-    if (wipeLink && wipeLink.href && !event.metaKey && !event.ctrlKey && event.button === 0) {
-      const dest = new URL(wipeLink.href, window.location.href);
-      if (dest.origin === window.location.origin) {
+    const link = event.target.closest("a[href]");
+    if (link && link.href && !event.metaKey && !event.ctrlKey && event.button === 0 && !link.target && !link.hasAttribute("download")) {
+      const dest = new URL(link.href, window.location.href);
+      if (dest.origin === window.location.origin && dest.pathname + dest.search !== location.pathname + location.search) {
         event.preventDefault();
         navigate(dest.href);
       }
     }
+  });
+
+  window.addEventListener("popstate", function () {
+    playWipe(function () {
+      swapPage(window.location.href, false);
+    });
   });
 
   document.addEventListener("keydown", function (event) {
@@ -284,6 +353,7 @@
     if (!tracks.length) return;
 
     let index = 0;
+    let userPaused = false;
     const MUSIC_KEY = "gal-music";
 
     function markCurrent() {
@@ -314,7 +384,7 @@
             audio.currentTime = atTime;
           } catch (error) {}
         }
-        if (autoplay) {
+        if (autoplay && !userPaused) {
           audio.play().catch(function () {});
         }
         syncPlay();
@@ -359,13 +429,16 @@
     }
 
     playBtn.addEventListener("click", function () {
-      if (!audio.getAttribute("src")) {
+      if (!audio.getAttribute("src") && !audio.src) {
+        userPaused = false;
         load(index, true);
         return;
       }
       if (audio.paused) {
+        userPaused = false;
         audio.play().catch(function () {});
       } else {
+        userPaused = true;
         audio.pause();
       }
     });
@@ -389,9 +462,26 @@
 
     window.addEventListener("pagehide", saveMusic);
     window.__galSaveMusic = saveMusic;
+    window.__galKeepMusic = function () {
+      if (!userPaused && audio.paused) {
+        audio.play().catch(function () {});
+      }
+    };
     window.__galStartMusic = function () {
+      userPaused = false;
       load(index, true, audio.currentTime || 0);
     };
+
+    document.addEventListener("pointerdown", function () {
+      if (!userPaused) {
+        audio.play().catch(function () {});
+      }
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden && !userPaused) {
+        audio.play().catch(function () {});
+      }
+    });
 
     let saved = null;
     try {
