@@ -93,6 +93,9 @@
 
   function navigate(href) {
     if (!href) return;
+    if (typeof window.__galSaveMusic === "function") {
+      window.__galSaveMusic();
+    }
     playWipe(function () {
       window.location.assign(href);
     });
@@ -101,6 +104,9 @@
   function enterTitle() {
     if (body.dataset.view !== "welcome" || !welcomeReady) return;
     sessionStorage.setItem("gal-entered", "1");
+    if (typeof window.__galStartMusic === "function") {
+      window.__galStartMusic();
+    }
     showScreen("title");
   }
 
@@ -278,17 +284,46 @@
     if (!tracks.length) return;
 
     let index = 0;
+    const MUSIC_KEY = "gal-music";
 
-    function load(nextIndex, autoplay) {
-      index = (nextIndex + tracks.length) % tracks.length;
-      audio.src = tracks[index].src;
+    function markCurrent() {
       dock.querySelectorAll("[data-track]").forEach(function (btn) {
         btn.classList.toggle("is-current", Number(btn.getAttribute("data-track")) === index);
       });
-      if (autoplay) {
-        audio.play().catch(function () {});
+    }
+
+    function saveMusic() {
+      sessionStorage.setItem(MUSIC_KEY, JSON.stringify({
+        index: index,
+        time: audio.currentTime || 0,
+        playing: !audio.paused
+      }));
+    }
+
+    function load(nextIndex, autoplay, atTime) {
+      index = (nextIndex + tracks.length) % tracks.length;
+      const nextSrc = tracks[index].src;
+      const already = audio.getAttribute("src") === nextSrc || audio.src.indexOf(encodeURI(nextSrc)) !== -1;
+      if (!already) {
+        audio.src = nextSrc;
       }
-      syncPlay();
+      markCurrent();
+      function seekAndPlay() {
+        if (typeof atTime === "number" && !Number.isNaN(atTime) && atTime > 0) {
+          try {
+            audio.currentTime = atTime;
+          } catch (error) {}
+        }
+        if (autoplay) {
+          audio.play().catch(function () {});
+        }
+        syncPlay();
+      }
+      if (already && audio.readyState >= 2) {
+        seekAndPlay();
+        return;
+      }
+      audio.addEventListener("loadedmetadata", seekAndPlay, { once: true });
     }
 
     function syncPlay() {
@@ -335,12 +370,40 @@
       }
     });
 
-    audio.addEventListener("play", syncPlay);
-    audio.addEventListener("pause", syncPlay);
+    audio.addEventListener("play", function () {
+      syncPlay();
+      saveMusic();
+    });
+    audio.addEventListener("pause", function () {
+      syncPlay();
+      saveMusic();
+    });
+    audio.addEventListener("timeupdate", function () {
+      if (Math.floor(audio.currentTime) % 2 === 0) {
+        saveMusic();
+      }
+    });
     audio.addEventListener("ended", function () {
       load(index + 1, true);
     });
 
-    load(0, false);
+    window.addEventListener("pagehide", saveMusic);
+    window.__galSaveMusic = saveMusic;
+    window.__galStartMusic = function () {
+      load(index, true, audio.currentTime || 0);
+    };
+
+    let saved = null;
+    try {
+      saved = JSON.parse(sessionStorage.getItem(MUSIC_KEY) || "null");
+    } catch (error) {
+      saved = null;
+    }
+
+    if (saved && typeof saved.index === "number") {
+      load(saved.index, saved.playing !== false, saved.time || 0);
+    } else {
+      load(0, true);
+    }
   })();
 })();
