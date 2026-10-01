@@ -1,169 +1,204 @@
-<section class="hero">
-  <div class="hero-copy">
-    <div class="eyebrow"><span class="eyebrow-dot"></span><%= theme.hero_eyebrow %></div>
-    <h1><%= theme.hero_title %></h1>
-    <p><%= theme.hero_text %></p>
-  </div>
+<%
+  const posts = site.posts.sort('date', -1).toArray();
+  const latest = posts[0];
+  const byCategory = function(name) {
+    return posts.filter(function(post) {
+      return post.categories && post.categories.toArray().some(function(category) {
+        return category.name === name;
+      });
+    });
+  };
+  const techPosts = byCategory('技术');
+  const lifePosts = byCategory('生活');
+  const storyPosts = byCategory('自创文');
+  const categoryPath = function(name) {
+    const found = site.categories.toArray().find(function(category) {
+      return category.name === name;
+    });
+    return found ? url_for(found.path) : url_for('/categories/' + name + '/');
+  };
+  const previewOf = function(post) {
+    if (!post) return null;
+    const cats = post.categories ? post.categories.toArray() : [];
+    return {
+      title: post.title,
+      href: url_for(post.path),
+      date: date(post.date, 'YYYY/MM/DD HH:mm'),
+      cat: cats.length ? cats[0].name : '未分类',
+      quote: '「' + post.title + '」'
+    };
+  };
+  const previews = {
+    start: previewOf(latest),
+    tech: previewOf(techPosts[0]),
+    life: previewOf(lifePosts[0]),
+    story: previewOf(storyPosts[0])
+  };
+  const calendarPostDates = site.posts.toArray().map(function(post) { return date(post.date, 'YYYY-MM-DD'); });
+%>
 
-  <aside class="profile" id="about">
-    <div class="avatar"><%= theme.profile.avatar_text %></div>
-    <h2><%= theme.profile.title %></h2>
-    <p><%= theme.profile.description %></p>
-    <div class="tags">
-      <% theme.profile.tags.forEach(function(tag) { %>
-        <span class="tag"><%= tag %></span>
-      <% }); %>
-    </div>
-  </aside>
+<section class="boot-screen" data-screen="boot">
+  <div class="boot-hud">
+    <p class="boot-brand">绯野のblog</p>
+    <div class="boot-bar" aria-hidden="true"><i></i></div>
+    <p class="boot-loading">NOW LOADING</p>
+  </div>
 </section>
 
-<section id="posts">
-  <div class="section-heading">
-    <h2 class="section-title"><%= theme.posts_title %></h2>
+<section class="welcome-screen" data-screen="welcome" hidden>
+  <p class="welcome-line" data-welcome-text="你好，欢迎来到绯野のblog"></p>
+  <p class="welcome-hint" hidden>双击进入</p>
+</section>
+
+<section class="title-screen" data-screen="title" hidden>
+  <div class="title-logo">
+    <img src="<%- url_for('/img/gal/logo-pixel.png') %>" alt="<%= theme.brand || config.title %>">
+    <p class="title-sub"><%= theme.hero_title || config.subtitle || '' %></p>
   </div>
 
-  <div class="grid">
-    <div class="post-list">
-      <% if (page.posts.length) { %>
-        <% page.posts.each(function(post) { %>
-          <% const summary = post.description || strip_html(post.excerpt || post.content).replace(/\s+/g, ' ').trim().slice(0, 130); %>
-          <% const categories = post.categories ? post.categories.map(function(category) { return category; }) : []; %>
-          <article class="post">
-            <div class="post-meta">
-              <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY 年 M 月 D 日') %></time>
-              <% if (categories.length) { %>
-                <a class="post-category" href="<%- url_for(categories[0].path) %>"><%= categories[0].name %></a>
-              <% } %>
-            </div>
-            <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
-            <p><%= summary %><%= summary.length >= 130 ? '…' : '' %></p>
-            <a class="read-more" href="<%- url_for(post.path) %>">阅读文章</a>
-          </article>
+  <nav class="title-menu" aria-label="标题界面">
+    <a class="title-item" href="<%- latest ? url_for(latest.path) : url_for('/') %>" data-wipe data-preview="start">
+      <%- partial('_partial/icon', { name: 'star' }) %>
+      <span>
+        <strong>开始阅读</strong>
+        <small>NEW GAME</small>
+      </span>
+    </a>
+    <a class="title-item" href="<%- categoryPath('技术') %>" data-wipe data-preview="tech">
+      <%- partial('_partial/icon', { name: 'folder' }) %>
+      <span>
+        <strong>技术</strong>
+        <small>DATA LOAD</small>
+      </span>
+    </a>
+    <a class="title-item" href="<%- categoryPath('生活') %>" data-wipe data-preview="life">
+      <%- partial('_partial/icon', { name: 'bookmark' }) %>
+      <span>
+        <strong>生活</strong>
+        <small>CONTINUE</small>
+      </span>
+    </a>
+    <a class="title-item" href="<%- categoryPath('自创文') %>" data-wipe data-preview="story">
+      <%- partial('_partial/icon', { name: 'extra' }) %>
+      <span>
+        <strong>自创文</strong>
+        <small>EXTRA MODE</small>
+      </span>
+    </a>
+    <button class="title-item" type="button" data-screen-target="library">
+      <%- partial('_partial/icon', { name: 'flow' }) %>
+      <span>
+        <strong>文章目录</strong>
+        <small>FLOWCHART</small>
+      </span>
+    </button>
+    <button class="title-item" type="button" data-screen-target="about">
+      <%- partial('_partial/icon', { name: 'book' }) %>
+      <span>
+        <strong>关于本站</strong>
+        <small>AFTER STORY</small>
+      </span>
+    </button>
+    <button class="title-item" type="button" data-screen-target="config">
+      <%- partial('_partial/icon', { name: 'gear' }) %>
+      <span>
+        <strong>系统设置</strong>
+        <small>SYSTEM CONFIG</small>
+      </span>
+    </button>
+  </nav>
+
+  <div class="side-box calendar-widget" data-calendar data-post-dates="<%= calendarPostDates.join(',') %>">
+    <div class="calendar-header">
+      <button class="calendar-nav" type="button" data-calendar-prev aria-label="上一个月" title="上一个月">‹</button>
+      <h3 data-calendar-title aria-live="polite"></h3>
+      <button class="calendar-nav" type="button" data-calendar-next aria-label="下一个月" title="下一个月">›</button>
+    </div>
+    <div class="calendar-weekdays" aria-hidden="true">
+      <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+    </div>
+    <div class="calendar-days" data-calendar-days role="grid"></div>
+    <div class="calendar-footer">
+      <button type="button" class="calendar-today" data-calendar-today>今天</button>
+      <time data-calendar-date></time>
+    </div>
+  </div>
+</section>
+
+<section class="inner-screen" data-screen="library" hidden>
+  <%- partial('_partial/inner-header', { title: '文章目录', en: 'FLOWCHART', icon: 'flow', stay: true }) %>
+  <div class="inner-panel">
+    <div class="save-list">
+      <% if (posts.length) { %>
+        <% posts.forEach(function(post) { %>
+          <%- partial('_partial/post-row', { post: post }) %>
         <% }); %>
       <% } else { %>
-        <article class="post empty-state">
-          <h3>文章正在准备中</h3>
-          <p>第一篇记录很快就会出现在这里。</p>
-        </article>
-      <% } %>
-
-      <% const currentPage = page.current || 1; %>
-      <% const totalPages = page.total || 1; %>
-      <% if (totalPages > 1) { %>
-        <%
-          const pageHref = function(pageNumber) {
-            const target = pageNumber === 1 ? url_for('/') : url_for(config.pagination_dir + '/' + pageNumber + '/');
-            return target + '#posts';
-          };
-          let pageStart = Math.max(1, currentPage - 2);
-          let pageEnd = Math.min(totalPages, pageStart + 4);
-          pageStart = Math.max(1, pageEnd - 4);
-          const visiblePages = [];
-          for (let pageNumber = pageStart; pageNumber <= pageEnd; pageNumber += 1) {
-            visiblePages.push(pageNumber);
-          }
-        %>
-        <nav
-          class="pagination"
-          aria-label="文章分页"
-          data-pagination
-          data-pagination-root="<%- url_for('/') %>"
-          data-pagination-dir="<%= config.pagination_dir %>"
-          data-total-pages="<%= totalPages %>"
-        >
-          <div class="pagination-links">
-            <% if (currentPage > 1) { %>
-              <a class="pagination-edge" href="<%- pageHref(1) %>" title="返回第一页">首页</a>
-              <a class="pagination-step" href="<%- pageHref(currentPage - 1) %>" rel="prev">上一页</a>
-            <% } else { %>
-              <span class="pagination-edge is-disabled" aria-disabled="true">首页</span>
-              <span class="pagination-step is-disabled" aria-disabled="true">上一页</span>
-            <% } %>
-
-            <span class="pagination-numbers" aria-label="页码">
-              <% visiblePages.forEach(function(pageNumber) { %>
-                <% if (pageNumber === currentPage) { %>
-                  <span class="pagination-number is-current" aria-current="page"><%= pageNumber %></span>
-                <% } else { %>
-                  <a class="pagination-number" href="<%- pageHref(pageNumber) %>" aria-label="第 <%= pageNumber %> 页"><%= pageNumber %></a>
-                <% } %>
-              <% }); %>
-            </span>
-
-            <% if (currentPage < totalPages) { %>
-              <a class="pagination-step" href="<%- pageHref(currentPage + 1) %>" rel="next">下一页</a>
-              <a class="pagination-edge" href="<%- pageHref(totalPages) %>" title="前往最后一页">尾页</a>
-            <% } else { %>
-              <span class="pagination-step is-disabled" aria-disabled="true">下一页</span>
-              <span class="pagination-edge is-disabled" aria-disabled="true">尾页</span>
-            <% } %>
-          </div>
-
-          <form class="pagination-jump" data-pagination-jump>
-            <label for="page-jump-<%= currentPage %>">跳至</label>
-            <input
-              id="page-jump-<%= currentPage %>"
-              name="page"
-              type="number"
-              min="1"
-              max="<%= totalPages %>"
-              value="<%= currentPage %>"
-              inputmode="numeric"
-              aria-label="输入页码，共 <%= totalPages %> 页"
-            >
-            <span aria-hidden="true">/ <%= totalPages %></span>
-            <button type="submit">前往</button>
-          </form>
-        </nav>
+        <div class="no-data">NO DATA<br><small>HINO BLOG</small></div>
       <% } %>
     </div>
-
-    <aside>
-      <% const calendarPostDates = site.posts.map(function(post) { return date(post.date, 'YYYY-MM-DD'); }); %>
-      <div class="side-box calendar-widget" data-calendar data-post-dates="<%= calendarPostDates.join(',') %>">
-        <div class="calendar-header">
-          <button class="calendar-nav" type="button" data-calendar-prev aria-label="上一个月" title="上一个月">‹</button>
-          <h3 data-calendar-title aria-live="polite"></h3>
-          <button class="calendar-nav" type="button" data-calendar-next aria-label="下一个月" title="下一个月">›</button>
-        </div>
-        <div class="calendar-weekdays" aria-hidden="true">
-          <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
-        </div>
-        <div class="calendar-days" data-calendar-days role="grid"></div>
-        <div class="calendar-footer">
-          <button type="button" class="calendar-today" data-calendar-today>今天</button>
-          <time data-calendar-date></time>
-        </div>
-      </div>
-
-      <div class="side-box">
-        <h3>关于这个博客</h3>
-        <p><%= theme.about_text %></p>
-      </div>
-
-      <div class="side-box" id="links">
-        <h3>常用链接</h3>
-        <ul>
-          <% theme.links.forEach(function(link) { %>
-            <li><a href="<%= link.url %>" target="_blank" rel="noopener noreferrer"><%= link.name %></a></li>
-          <% }); %>
-        </ul>
-      </div>
-    </aside>
   </div>
 </section>
 
-<section id="projects">
-  <div class="section-heading">
-    <h2 class="section-title">项目与计划</h2>
-  </div>
-
-  <div class="projects">
-    <% theme.projects.forEach(function(project) { %>
-      <article class="project">
-        <h3><%= project.title %></h3>
-        <p><%= project.description %></p>
-      </article>
-    <% }); %>
+<section class="inner-screen" data-screen="about" hidden>
+  <%- partial('_partial/inner-header', { title: '关于本站', en: 'AFTER STORY', icon: 'book', stay: true }) %>
+  <div class="inner-panel about-panel">
+    <p class="about-lead"><%= theme.about_text %></p>
+    <p class="about-lead"><%= theme.hero_text %></p>
+    <div class="after-cards">
+      <a class="after-card" href="<%- categoryPath('技术') %>" data-wipe>
+        <strong>技术</strong>
+        <small>TECH</small>
+        <span><%= techPosts.length %> 篇</span>
+      </a>
+      <a class="after-card" href="<%- categoryPath('生活') %>" data-wipe>
+        <strong>生活</strong>
+        <small>LIFE</small>
+        <span><%= lifePosts.length %> 篇</span>
+      </a>
+      <a class="after-card" href="<%- categoryPath('自创文') %>" data-wipe>
+        <strong>自创文</strong>
+        <small>STORY</small>
+        <span><%= storyPosts.length %> 篇</span>
+      </a>
+    </div>
+    <% if (theme.links && theme.links.length) { %>
+      <ul class="about-links">
+        <% theme.links.forEach(function(link) { %>
+          <li><a href="<%= link.url %>" target="_blank" rel="noopener noreferrer"><%= link.name %></a></li>
+        <% }); %>
+      </ul>
+    <% } %>
   </div>
 </section>
+
+<section class="inner-screen" data-screen="config" hidden>
+  <%- partial('_partial/inner-header', { title: '系统设置', en: 'SYSTEM CONFIG', icon: 'gear', stay: true }) %>
+  <div class="inner-panel config-panel">
+    <label class="config-row">
+      <span>鼠标拖尾</span>
+      <input type="checkbox" name="gal-trail" data-config-toggle checked>
+    </label>
+    <label class="config-row">
+      <span>点击特效</span>
+      <input type="checkbox" name="gal-charm" data-config-toggle checked>
+    </label>
+    <p class="config-note">配乐还没放进来。若要加和风 BGM，告诉我你想用哪一首、能不能从网上下。</p>
+  </div>
+</section>
+
+<% Object.keys(previews).forEach(function(key) { %>
+  <% const item = previews[key]; %>
+  <% if (item) { %>
+    <template data-preview-source="<%= key %>">
+      <div class="continue-preview-head">Continue</div>
+      <div class="continue-preview-body">
+        <p class="continue-quote"><%= item.quote %></p>
+        <div class="continue-meta">
+          <time><%= item.date %></time>
+          <span><%= item.cat %></span>
+        </div>
+      </div>
+    </template>
+  <% } %>
+<% }); %>

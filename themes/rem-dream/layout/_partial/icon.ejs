@@ -1,0 +1,22 @@
+<% const iconName = name || 'star'; %>
+<span class="gal-icon gal-icon-<%= iconName %>" aria-hidden="true">
+  <% if (iconName === 'star') { %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 13.7 9h5.8l-4.7 3.4 1.8 5.6L12 14.8 7.4 18l1.8-5.6L4.5 9h5.8z"/></svg>
+  <% } else if (iconName === 'folder') { %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5h6l1.6 1.8H20v9.2H4z"/><path d="m10 13 3 2.2 4-4.2"/></svg>
+  <% } else if (iconName === 'bookmark') { %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5h10v15l-5-3.2-5 3.2z"/></svg>
+  <% } else if (iconName === 'flow') { %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="2.2"/><circle cx="17" cy="7" r="2.2"/><circle cx="12" cy="17" r="2.2"/><path d="M9 8.2 10.8 15M15 8.2 13.2 15"/></svg>
+  <% } else if (iconName === 'extra') { %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5a7.5 7.5 0 0 1 0 15 5 5 0 0 0 0-10 2.5 2.5 0 1 1 0-5z"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+  <% } else if (iconName === 'book') { %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5.5h11.5v13H8.2A2.2 2.2 0 0 0 6 16.3z"/><path d="M6 5.5A2.2 2.2 0 0 1 8.2 3.5H20"/><path d="M8.2 18.5H20"/></svg>
+  <% } else if (iconName === 'gear') { %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 4.5v2M12 17.5v2M4.5 12h2M17.5 12h2M6.4 6.4l1.5 1.5M16.1 16.1l1.5 1.5M17.6 6.4l-1.5 1.5M7.9 16.1l-1.5 1.5"/></svg>
+  <% } else if (iconName === 'power') { %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5v7"/><path d="M8.1 6.8a6.5 6.5 0 1 0 7.8 0"/></svg>
+  <% } else { %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="7"/></svg>
+  <% } %>
+</span>

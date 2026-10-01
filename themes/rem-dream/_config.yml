@@ -33,8 +33,9 @@ projects:
     description: 把自己的项目、笔记、工具和文章安静地保存在这里。
 
 background:
-  video: /assets/video/yukino-bg.mp4
-  poster: /assets/video/yukino-bg-preview.jpg
+  video: /assets/video/transition.mp4
+  poster: /assets/video/transition-poster.jpg
+  logo: /img/gal/logo-pixel.png
 
 comments:
   giscus:

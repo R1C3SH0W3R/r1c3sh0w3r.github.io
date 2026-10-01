@@ -1,22 +1,40 @@
-<% const listingTitle = page.category ? '分类：' + page.category : (page.tag ? '标签：' + page.tag : (page.title || '文章归档')); %>
-<section class="listing-page">
-  <div class="section-heading">
-    <h1 class="section-title"><%= listingTitle %></h1>
-  </div>
-  <div class="post-list">
-    <% page.posts.each(function(post) { %>
-      <article class="post">
-        <div class="post-meta">
-          <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY 年 M 月 D 日') %></time>
-          <% if (post.categories && post.categories.length) { %>
-            <% post.categories.each(function(category) { %>
-              <a class="post-category" href="<%- url_for(category.path) %>"><%= category.name %></a>
-            <% }); %>
-          <% } %>
-        </div>
-        <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
-        <a class="read-more" href="<%- url_for(post.path) %>">阅读文章</a>
-      </article>
-    <% }); %>
+<%
+  let ribbonTitle = '文章目录';
+  let ribbonEn = 'LIBRARY';
+  let ribbonIcon = 'flow';
+  if (page.category === '技术') {
+    ribbonTitle = '技术';
+    ribbonEn = 'DATA LOAD';
+    ribbonIcon = 'folder';
+  } else if (page.category === '生活') {
+    ribbonTitle = '生活';
+    ribbonEn = 'CONTINUE';
+    ribbonIcon = 'bookmark';
+  } else if (page.category === '自创文') {
+    ribbonTitle = '自创文';
+    ribbonEn = 'EXTRA MODE';
+    ribbonIcon = 'extra';
+  } else if (page.tag) {
+    ribbonTitle = page.tag;
+    ribbonEn = 'TAG';
+    ribbonIcon = 'star';
+  } else if (page.year) {
+    ribbonTitle = String(page.year);
+    ribbonEn = 'ARCHIVE';
+    ribbonIcon = 'book';
+  }
+%>
+<section class="inner-screen is-page">
+  <%- partial('_partial/inner-header', { title: ribbonTitle, en: ribbonEn, icon: ribbonIcon }) %>
+  <div class="inner-panel">
+    <div class="save-list">
+      <% if (page.posts && page.posts.length) { %>
+        <% page.posts.each(function(post) { %>
+          <%- partial('_partial/post-row', { post: post }) %>
+        <% }); %>
+      <% } else { %>
+        <div class="no-data">NO DATA<br><small>HINO BLOG</small></div>
+      <% } %>
+    </div>
   </div>
 </section>

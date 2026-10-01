@@ -1,0 +1,13 @@
+<%
+  const rowPost = post;
+  const summary = strip_html(rowPost.description || rowPost.excerpt || rowPost.content).replace(/\s+/g, ' ').trim().slice(0, 72);
+  const cats = rowPost.categories ? rowPost.categories.toArray() : [];
+%>
+<a class="save-row" href="<%- url_for(rowPost.path) %>" data-wipe>
+  <time datetime="<%= date_xml(rowPost.date) %>"><%= date(rowPost.date, 'YYYY/MM/DD') %></time>
+  <span class="save-cat"><%= cats.length ? cats[0].name : '未分类' %></span>
+  <div class="save-body">
+    <strong><%= rowPost.title %></strong>
+    <% if (summary) { %><p><%= summary %><%= summary.length >= 72 ? '…' : '' %></p><% } %>
+  </div>
+</a>

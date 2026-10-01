@@ -1,18 +1,8 @@
 window.addEventListener("load", async function () {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const backgroundVideo = document.getElementById("anime-bg");
-  const compactLayout = window.matchMedia("(max-width: 820px)").matches;
+  const trailOff = window.localStorage.getItem("gal-trail") === "0";
 
-  if (backgroundVideo && (reduceMotion || compactLayout)) {
-    backgroundVideo.pause();
-    backgroundVideo.removeAttribute("autoplay");
-  } else if (backgroundVideo) {
-    backgroundVideo.play().catch(function () {
-      document.body.classList.add("video-paused");
-    });
-  }
-
-  if (!reduceMotion && window.tsParticles && typeof window.loadFull === "function") {
+  if (!reduceMotion && !trailOff && window.tsParticles && typeof window.loadFull === "function") {
     try {
       await window.loadFull(window.tsParticles);
       await window.tsParticles.load({
@@ -224,7 +214,7 @@ window.addEventListener("load", async function () {
         ? normalizedRoot
         : normalizedRoot + directory + "/" + requestedPage + "/";
 
-      window.location.assign(target + "#posts");
+      window.location.assign(target);
     });
 
     input.addEventListener("input", function () {
@@ -438,7 +428,7 @@ window.addEventListener("load", async function () {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   document.addEventListener("pointerdown", function (event) {
-    if (reduceMotion.matches || event.button > 0) {
+    if (reduceMotion.matches || document.body.classList.contains("charm-off") || event.button > 0) {
       return;
     }
 

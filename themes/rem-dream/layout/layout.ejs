@@ -2,14 +2,17 @@
 <html lang="zh-CN">
 <%
   const isPost = page.layout === 'post';
+  const isHome = is_home();
+  const layoutName = isHome ? 'index' : (page.layout || 'page');
   const seoTitle = page.title ? page.title + ' · ' + config.title : config.title;
   const rawDescription = page.description || page.excerpt || config.description || seoTitle;
   const cleanDescription = strip_html(String(rawDescription)).replace(/\s+/g, ' ').trim();
   const seoDescription = cleanDescription.length > 160 ? cleanDescription.slice(0, 157) + '...' : cleanDescription;
   const canonicalUrl = page.canonical || full_url_for(page.path || '');
   const siteHome = full_url_for('/');
-  const seoImage = full_url_for(page.cover || (theme.background && theme.background.poster) || '/favicon.png');
+  const seoImage = full_url_for(page.cover || '/assets/video/transition-poster.jpg');
   const seoKeywords = [];
+  const initialView = isHome ? 'boot' : 'inner';
 
   if (Array.isArray(config.keywords)) {
     config.keywords.forEach(function(keyword) {
@@ -89,7 +92,7 @@
   <meta name="author" content="<%= config.author %>">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="google-site-verification" content="ZkzxbmnlOFWyyPQ5T8_mFFwb5BC-HUM4pwW-9-A6RiA">
-  <meta name="theme-color" content="#fff8fb">
+  <meta name="theme-color" content="#f3ead8">
 
   <link rel="canonical" href="<%= canonicalUrl %>">
   <link rel="sitemap" type="application/xml" title="Sitemap" href="<%= full_url_for('/sitemap.xml') %>">
@@ -117,45 +120,49 @@
   <link rel="stylesheet" href="<%- url_for('/live2d/css/live2d.css') %>">
   <link rel="stylesheet" href="<%- url_for('/css/style.css') %>">
 </head>
-<body class="layout-<%= page.layout || 'page' %>">
-  <video
-    id="anime-bg"
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="metadata"
-    poster="<%- url_for(theme.background.poster) %>"
-    aria-hidden="true"
-  >
-    <source src="<%- url_for(theme.background.video) %>" type="video/mp4" media="(min-width: 821px)">
-  </video>
-
-  <div id="anime-bg-shade" aria-hidden="true"></div>
+<body class="gal-app layout-<%= layoutName %>" data-view="<%= initialView %>">
+  <div id="gal-fx" class="gal-fx" aria-hidden="true">
+    <video id="gal-fx-video" muted loop playsinline preload="auto" poster="<%- url_for('/assets/video/transition-poster.jpg') %>">
+      <source src="<%- url_for('/assets/video/transition.mp4') %>" type="video/mp4">
+    </video>
+  </div>
   <div id="tsparticles" aria-hidden="true"></div>
 
-  <header>
-    <div class="container nav">
-      <a class="brand" href="<%- url_for('/') %>">
-        <span class="brand-mark" aria-hidden="true">✦</span>
-        <span><%= theme.brand %></span>
-      </a>
-      <nav class="nav-links" aria-label="主导航">
-        <a href="<%- url_for('/') %>#posts">文章</a>
-        <a href="<%- url_for('/') %>#projects">项目</a>
-        <a href="<%- url_for('/') %>#about">关于</a>
-        <a href="<%- url_for('/') %>#links">链接</a>
-      </nav>
+  <div class="gal-window" role="presentation">
+    <main id="top">
+      <%- body %>
+    </main>
+  </div>
+
+  <div id="gal-preview" class="continue-preview" hidden></div>
+
+  <div id="gal-trans" class="gal-trans" hidden aria-hidden="true"></div>
+
+  <aside class="music-dock" data-music-dock>
+    <div class="music-panel">
+      <ul class="music-list">
+        <li><button type="button" data-track="0">南山南</button></li>
+        <li><button type="button" data-track="1">沙龙</button></li>
+        <li><button type="button" data-track="2">赤青</button></li>
+        <li><button type="button" data-track="3">郭源潮</button></li>
+      </ul>
+      <div class="music-controls">
+        <button type="button" data-music-prev aria-label="上一首">⏮</button>
+        <button type="button" data-music-play aria-label="播放">▶</button>
+        <button type="button" data-music-next aria-label="下一首">⏭</button>
+      </div>
     </div>
-  </header>
-
-  <main class="container" id="top">
-    <%- body %>
-  </main>
-
-  <footer>
-    <div class="container">© <%= date(Date.now(), 'YYYY') %> <%= theme.footer_text %> · Powered by Hexo & GitHub Pages</div>
-  </footer>
+    <button class="music-toggle" type="button" data-music-toggle aria-label="打开播放器" aria-expanded="false">♪</button>
+    <audio id="gal-audio" preload="none"></audio>
+    <script type="application/json" id="music-tracks">
+      [
+        {"title":"南山南","src":<%- JSON.stringify(url_for('/assets/music/南山南.mp3')) %>},
+        {"title":"沙龙","src":<%- JSON.stringify(url_for('/assets/music/沙龙.mp3')) %>},
+        {"title":"赤青","src":<%- JSON.stringify(url_for('/assets/music/赤青.m4a')) %>},
+        {"title":"郭源潮","src":<%- JSON.stringify(url_for('/assets/music/郭源潮.m4a')) %>}
+      ]
+    </script>
+  </aside>
 
   <aside class="visitor-counter" data-visitor-counter aria-label="本站累计访问次数">
     <span class="visitor-counter-label">累计访问</span>
@@ -179,5 +186,6 @@
   <script src="<%- url_for('/assets/vendor/tsparticles/tsparticles.bundle.min.js') %>"></script>
   <script src="https://cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js" defer></script>
   <script src="<%- url_for('/js/effects.js') %>"></script>
+  <script src="<%- url_for('/js/galgame.js') %>"></script>
 </body>
 </html>

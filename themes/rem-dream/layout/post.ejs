@@ -1,137 +1,140 @@
-<article class="article-page">
-  <header class="article-hero">
-    <a class="article-back" href="<%- url_for('/') %>#posts">返回文章列表</a>
-    <h1><%= page.title %></h1>
-    <div class="article-meta">
-      <time datetime="<%= date_xml(page.date) %>"><%= date(page.date, 'YYYY 年 M 月 D 日') %></time>
-      <% if (page.categories && page.categories.length) { %>
-        <% page.categories.each(function(category) { %>
-          <a class="article-category" href="<%- url_for(category.path) %>"><%= category.name %></a>
-        <% }); %>
-      <% } %>
-    </div>
-  </header>
+<article class="inner-screen is-page read-screen">
+  <%- partial('_partial/inner-header', { title: page.title, en: 'READING', icon: 'book' }) %>
 
-  <aside class="article-toc" data-article-toc aria-label="文章目录" hidden>
-    <button class="article-toc-toggle"
-            type="button"
-            aria-expanded="false"
-            aria-controls="article-toc-panel"
-            aria-label="打开文章目录">
-      <span class="article-toc-toggle-icon" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-      <span>目录</span>
-    </button>
-    <nav class="article-toc-panel" id="article-toc-panel" aria-label="本文目录">
-      <div class="article-toc-header">
-        <strong>本文目录</strong>
-        <span data-article-toc-count></span>
+  <div class="read-stage">
+    <header class="read-meta">
+      <span class="nameplate"><%= config.author %></span>
+      <div class="article-meta">
+        <time datetime="<%= date_xml(page.date) %>"><%= date(page.date, 'YYYY 年 M 月 D 日') %></time>
+        <% if (page.categories && page.categories.length) { %>
+          <% page.categories.each(function(category) { %>
+            <a class="article-category" href="<%- url_for(category.path) %>" data-wipe><%= category.name %></a>
+          <% }); %>
+        <% } %>
       </div>
-      <ol class="article-toc-list" data-article-toc-list></ol>
-    </nav>
-  </aside>
+    </header>
 
-  <div class="article-card">
-    <% if (page.cover) { %>
-      <figure class="article-cover">
-        <img src="<%- url_for(page.cover) %>" alt="<%= page.title %>的封面图">
-      </figure>
-    <% } %>
+    <aside class="article-toc" data-article-toc aria-label="文章目录" hidden>
+      <button class="article-toc-toggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="article-toc-panel"
+              aria-label="打开文章目录">
+        <span class="article-toc-toggle-icon" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span>目录</span>
+      </button>
+      <nav class="article-toc-panel" id="article-toc-panel" aria-label="本文目录">
+        <div class="article-toc-header">
+          <strong>本文目录</strong>
+          <span data-article-toc-count></span>
+        </div>
+        <ol class="article-toc-list" data-article-toc-list></ol>
+      </nav>
+    </aside>
 
-    <% if (page.video) { %>
-      <video class="article-featured-video" controls preload="metadata"<% if (page.video_poster) { %> poster="<%- url_for(page.video_poster) %>"<% } %>>
-        <source src="<%- url_for(page.video) %>">
-        您的浏览器暂不支持播放此视频。
-      </video>
-    <% } %>
-
-    <% const contentBlocks = Array.isArray(page.content_blocks) ? page.content_blocks : []; %>
-    <div class="article-content">
-      <% if (page.content && page.content.trim()) { %>
-        <div class="article-block article-block-text article-legacy-content"><%- page.content %></div>
+    <div class="read-paper">
+      <% if (page.cover) { %>
+        <figure class="article-cover">
+          <img src="<%- url_for(page.cover) %>" alt="<%= page.title %>的封面图">
+        </figure>
       <% } %>
 
-      <% contentBlocks.forEach(function(block) { %>
-        <% const blockType = block.type || block._block; %>
-        <% if (blockType === 'text' && block.content) { %>
-          <div class="article-block article-block-text"><%- markdown(block.content) %></div>
+      <% if (page.video) { %>
+        <video class="article-featured-video" controls preload="metadata"<% if (page.video_poster) { %> poster="<%- url_for(page.video_poster) %>"<% } %>>
+          <source src="<%- url_for(page.video) %>">
+          您的浏览器暂不支持播放此视频。
+        </video>
+      <% } %>
+
+      <% const contentBlocks = Array.isArray(page.content_blocks) ? page.content_blocks : []; %>
+      <div class="article-content">
+        <% if (page.content && page.content.trim()) { %>
+          <div class="article-block article-block-text article-legacy-content"><%- page.content %></div>
         <% } %>
-        <% if (blockType === 'image' && block.src) { %>
-          <figure class="article-block article-media-block">
-            <img src="<%- url_for(block.src) %>" alt="<%= block.alt || page.title %>" loading="lazy" decoding="async">
-            <% if (block.caption) { %><figcaption><%= block.caption %></figcaption><% } %>
-          </figure>
-        <% } %>
-        <% if (blockType === 'video' && block.src) { %>
-          <figure class="article-block article-media-block">
-            <video controls preload="metadata" playsinline<% if (block.poster) { %> poster="<%- url_for(block.poster) %>"<% } %>>
-              <source src="<%- url_for(block.src) %>">
-              您的浏览器暂不支持播放此视频。
-            </video>
-            <% if (block.caption) { %><figcaption><%= block.caption %></figcaption><% } %>
-          </figure>
-        <% } %>
-        <% if (blockType === 'embed' && block.url) { %>
-          <% const embedUrl = String(block.url).trim(); %>
-          <% if (/^(https?:)?\/\//i.test(embedUrl)) { %>
+
+        <% contentBlocks.forEach(function(block) { %>
+          <% const blockType = block.type || block._block; %>
+          <% if (blockType === 'text' && block.content) { %>
+            <div class="article-block article-block-text"><%- markdown(block.content) %></div>
+          <% } %>
+          <% if (blockType === 'image' && block.src) { %>
             <figure class="article-block article-media-block">
-              <iframe class="article-embed-frame"
-                      src="<%= embedUrl %>"
-                      title="<%= block.title || '外部视频' %>"
-                      loading="lazy"
-                      referrerpolicy="strict-origin-when-cross-origin"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowfullscreen></iframe>
+              <img src="<%- url_for(block.src) %>" alt="<%= block.alt || page.title %>" loading="lazy" decoding="async">
               <% if (block.caption) { %><figcaption><%= block.caption %></figcaption><% } %>
             </figure>
           <% } %>
-        <% } %>
-      <% }); %>
-    </div>
-
-    <% if (page.tags && page.tags.length) { %>
-      <div class="article-tags" aria-label="文章标签">
-        <% page.tags.each(function(tag) { %>
-          <span class="tag"><%= tag.name %></span>
+          <% if (blockType === 'video' && block.src) { %>
+            <figure class="article-block article-media-block">
+              <video controls preload="metadata" playsinline<% if (block.poster) { %> poster="<%- url_for(block.poster) %>"<% } %>>
+                <source src="<%- url_for(block.src) %>">
+                您的浏览器暂不支持播放此视频。
+              </video>
+              <% if (block.caption) { %><figcaption><%= block.caption %></figcaption><% } %>
+            </figure>
+          <% } %>
+          <% if (blockType === 'embed' && block.url) { %>
+            <% const embedUrl = String(block.url).trim(); %>
+            <% if (/^(https?:)?\/\//i.test(embedUrl)) { %>
+              <figure class="article-block article-media-block">
+                <iframe class="article-embed-frame"
+                        src="<%= embedUrl %>"
+                        title="<%= block.title || '外部视频' %>"
+                        loading="lazy"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen></iframe>
+                <% if (block.caption) { %><figcaption><%= block.caption %></figcaption><% } %>
+              </figure>
+            <% } %>
+          <% } %>
         <% }); %>
       </div>
+
+      <% if (page.tags && page.tags.length) { %>
+        <div class="article-tags" aria-label="文章标签">
+          <% page.tags.each(function(tag) { %>
+            <span class="tag"><%= tag.name %></span>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (page.prev || page.next) { %>
+      <nav class="article-navigation" aria-label="相邻文章">
+        <% if (page.prev) { %><a href="<%- url_for(page.prev.path) %>" data-wipe>上一篇：<%= page.prev.title %></a><% } %>
+        <% if (page.next) { %><a href="<%- url_for(page.next.path) %>" data-wipe>下一篇：<%= page.next.title %></a><% } %>
+      </nav>
+    <% } %>
+
+    <% const giscus = theme.comments && theme.comments.giscus; %>
+    <% if (page.comments !== false && giscus && giscus.enabled && giscus.repo_id && giscus.category_id) { %>
+      <section class="comments-card" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <h2 id="comments-title">留言</h2>
+          <p>欢迎留下想法。留言将由 GitHub Discussions 保存。</p>
+        </div>
+        <div class="giscus"></div>
+        <script src="https://giscus.app/client.js"
+                data-repo="<%= giscus.repo %>"
+                data-repo-id="<%= giscus.repo_id %>"
+                data-category="<%= giscus.category %>"
+                data-category-id="<%= giscus.category_id %>"
+                data-mapping="<%= giscus.mapping || 'pathname' %>"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="<%= giscus.theme || 'light' %>"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async>
+        </script>
+      </section>
     <% } %>
   </div>
-
-  <% if (page.prev || page.next) { %>
-    <nav class="article-navigation" aria-label="相邻文章">
-      <% if (page.prev) { %><a href="<%- url_for(page.prev.path) %>">上一篇：<%= page.prev.title %></a><% } %>
-      <% if (page.next) { %><a href="<%- url_for(page.next.path) %>">下一篇：<%= page.next.title %></a><% } %>
-    </nav>
-  <% } %>
-
-  <% const giscus = theme.comments && theme.comments.giscus; %>
-  <% if (page.comments !== false && giscus && giscus.enabled && giscus.repo_id && giscus.category_id) { %>
-    <section class="comments-card" aria-labelledby="comments-title">
-      <div class="comments-heading">
-        <h2 id="comments-title">留言</h2>
-        <p>欢迎留下想法。留言将由 GitHub Discussions 保存。</p>
-      </div>
-      <div class="giscus"></div>
-      <script src="https://giscus.app/client.js"
-              data-repo="<%= giscus.repo %>"
-              data-repo-id="<%= giscus.repo_id %>"
-              data-category="<%= giscus.category %>"
-              data-category-id="<%= giscus.category_id %>"
-              data-mapping="<%= giscus.mapping || 'pathname' %>"
-              data-strict="1"
-              data-reactions-enabled="1"
-              data-emit-metadata="0"
-              data-input-position="top"
-              data-theme="<%= giscus.theme || 'light' %>"
-              data-lang="zh-CN"
-              data-loading="lazy"
-              crossorigin="anonymous"
-              async>
-      </script>
-    </section>
-  <% } %>
 </article>

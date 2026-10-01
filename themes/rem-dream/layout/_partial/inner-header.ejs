@@ -1,0 +1,20 @@
+<header class="inner-ribbon">
+  <div class="inner-ribbon-title">
+    <%- partial('_partial/icon', { name: icon || 'book' }) %>
+    <div>
+      <h1><%= title %></h1>
+      <p><%= en || '' %></p>
+    </div>
+  </div>
+</header>
+<% if (typeof stay !== 'undefined' && stay) { %>
+  <button class="back-title" type="button" data-screen-target="title">
+    <%- partial('_partial/icon', { name: 'gear' }) %>
+    回到标题界面
+  </button>
+<% } else { %>
+  <a class="back-title" href="<%- url_for('/') %>" data-wipe>
+    <%- partial('_partial/icon', { name: 'gear' }) %>
+    回到标题界面
+  </a>
+<% } %>
